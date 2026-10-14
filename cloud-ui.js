@@ -1,0 +1,85 @@
+window.CicloCloud={
+ async prepare(account){
+  const recoveryRequested=location.hash.includes('type=recovery');
+  const client=CicloSupabase.createClient('https://hksxuvnevztwnyfbuftx.supabase.co','sb_publishable_MhGqEKd7AWRC2ICCUViylw_VKh8fzjk',{
+   auth:{storageKey:'ciclo-cloud-auth:'+account.id,detectSessionInUrl:true},global:{fetch:(url,options={})=>fetch(url,{...options,signal:options.signal||AbortSignal.timeout(15000)})}
+  });
+  const {data,error}=await client.auth.getSession();
+  const session=data?.session;
+  const cloud={client,user:session?.user||null,account,mode:'local',error:null,recovery:recoveryRequested};
+  client.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){cloud.recovery=true;setTimeout(()=>document.getElementById('cloudButton')?.click(),100);}if(event==='SIGNED_OUT'&&cloud.user){location.reload();}});
+  if(error){cloud.error=error;return cloud;}
+  if(!cloud.user)return cloud;
+  cloud.mode='cloud';cloud.key='ciclo-estudos-v1:cloud:'+cloud.user.id;
+  const metaKey=cloud.key+':sync';let meta=null;
+  try{meta=JSON.parse(localStorage.getItem(metaKey));}catch{}
+  const shape=p=>{if(!p||!Array.isArray(p.subjects)||!Array.isArray(p.stages)||!Array.isArray(p.history))throw new Error('Dados da nuvem incompatíveis. Exporte uma cópia antes de substituir.');};
+  const load=async()=>{const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
+  cloud.sync=new CicloSupabase.SnapshotSync({load,validate:shape,write:async(payload,version)=>{
+   let q=client.from('ciclo_study_state');
+   q=version===null?q.insert({user_id:cloud.user.id,payload}):q.update({payload}).eq('user_id',cloud.user.id).eq('version',version);
+   const {data,error}=await q.select('version').maybeSingle();if(error)throw error;return data;
+  },cache:pending=>{localStorage.setItem(metaKey,JSON.stringify({version:cloud.sync.version,pending}));},onStatus:(status,error)=>{cloud.status=status;cloud.error=error||null;cloud.renderStatus?.();}});
+  try{
+   let payload=await cloud.sync.restore();
+   if(meta?.pending){
+    shape(meta.pending.payload);payload=meta.pending.payload;cloud.sync.pending=meta.pending;
+    if(meta.version!==cloud.sync.version){cloud.sync.blocked=true;cloud.status='conflict';}
+    else cloud.status='pending';
+   }else cloud.status='saved';
+   if(payload)localStorage.setItem(cloud.key,JSON.stringify(payload));
+   else localStorage.removeItem(cloud.key);
+  }catch(e){
+   cloud.error=e;cloud.status='error';cloud.sync.blocked=true;
+   if(!localStorage.getItem(cloud.key)){cloud.fatal=true;}
+  }
+  return cloud;
+ },
+ attach(cloud,hooks){
+  const $=id=>document.getElementById(id);const label={local:'Somente neste navegador',pending:'Alterações pendentes',saving:'Salvando na nuvem…',saved:'Salvo na nuvem',conflict:'Conflito entre dispositivos',error:'Nuvem indisponível'};
+  cloud.renderStatus=()=>{$('cloudStatus').textContent=label[cloud.status||cloud.mode]||label.local;$('cloudStatus').dataset.status=cloud.status||cloud.mode;$('cloudIdentity').textContent=cloud.user?cloud.user.email:'Entre para acessar os mesmos estudos em outro dispositivo.';$('cloudConnected').hidden=!cloud.user;$('cloudLoginForm').hidden=!!cloud.user;$('cloudMessage').textContent=cloud.error?(cloud.error.message||'Não foi possível acessar a nuvem.'):'';$('cloudRecovery').hidden=!cloud.recovery;};
+  cloud.renderStatus();
+  if(cloud.account.standalone)$('cloudMigrate').hidden=true;
+  $('cloudButton').onclick=()=>{$('cloudError').hidden=true;cloud.renderStatus();$('cloudDialog').showModal();};
+  const err=e=>{$('cloudError').textContent=e.message||String(e);$('cloudError').hidden=false;};
+  const run=async fn=>{const buttons=[...$('cloudDialog').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('cloudError').hidden=true;try{await fn();}catch(e){err(e);}finally{buttons.forEach(b=>b.disabled=false);$('cloudPassword').value='';}};
+  $('cloudLoginForm').onsubmit=e=>{e.preventDefault();run(async()=>{const {error}=await cloud.client.auth.signInWithPassword({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value});if(error)throw error;location.reload();});};
+  $('cloudSignUp').onclick=()=>{if(!$('cloudLoginForm').reportValidity())return;run(async()=>{const {data,error}=await cloud.client.auth.signUp({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value,options:{emailRedirectTo:new URL('./',location.href).href}});if(error)throw error;if(data.session){location.reload();return;}$('cloudMessage').textContent='Conta solicitada. Confirme o e-mail recebido e depois volte aqui para entrar. O projeto precisa ter envio de e-mail e endereço de retorno configurados.';});};
+  $('cloudReset').onclick=()=>run(async()=>{const email=$('cloudEmail').value.trim();if(!email)throw new Error('Informe seu e-mail primeiro.');const {error}=await cloud.client.auth.resetPasswordForEmail(email,{redirectTo:new URL('./',location.href).href});if(error)throw error;$('cloudMessage').textContent='Se houver uma conta, você receberá as instruções por e-mail.';});
+  $('cloudNewPasswordForm').onsubmit=e=>{e.preventDefault();run(async()=>{const {error}=await cloud.client.auth.updateUser({password:$('cloudNewPassword').value});if(error)throw error;$('cloudNewPassword').value='';cloud.recovery=false;history.replaceState(null,'',location.pathname);cloud.renderStatus();$('cloudMessage').textContent='Senha atualizada.';});};
+  $('cloudSaveNow').onclick=()=>run(async()=>{await cloud.sync?.flush();if(cloud.sync?.blocked)throw new Error('A nuvem mudou em outra sessão. Baixe o backup deste rascunho e recarregue os dados da nuvem.');if(cloud.sync?.pending)throw new Error('Ainda há alterações pendentes. Confira a conexão e tente novamente.');});
+  $('cloudExport').onclick=()=>hooks.export();
+  $('cloudUseRemote').onclick=()=>run(async()=>{
+   if(!confirm('Recarregar os dados da nuvem substitui o rascunho local desta conta. Baixe um backup antes se quiser preservá-lo.'))return;
+   const {data,error}=await cloud.client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;
+   if(!data)throw new Error('Esta conta ainda não tem dados na nuvem.');hooks.validate(data.payload);
+   localStorage.setItem(cloud.key,JSON.stringify(data.payload));localStorage.removeItem(cloud.key+':sync');location.reload();
+  });
+  $('cloudMigrate').onclick=()=>run(async()=>{
+   if(cloud.sync.blocked)throw new Error('Resolva a conexão ou o conflito antes de transferir os dados.');
+   const legacy='ciclo-estudos-v1';const raw=localStorage.getItem(legacy+':'+cloud.account.id)||(cloud.account.isOwner?localStorage.getItem(legacy):null);
+   if(!raw)throw new Error('Não há estudos locais dessa conta neste navegador. Use Dados e backup para importar seu arquivo.');
+   const next=hooks.validate(JSON.parse(raw));
+   if(!confirm('Transferir os estudos locais para '+cloud.user.email+'? Os dados desta conta na nuvem serão substituídos. A cópia local original será preservada.'))return;
+   hooks.replace(next);await cloud.sync.flush();if(cloud.sync.pending||cloud.sync.blocked)throw new Error('Transferência pendente. Baixe um backup e confira o status antes de sair.');$('cloudMessage').textContent='Estudos transferidos e salvos na nuvem.';
+  });
+  $('cloudSignOut').onclick=()=>run(async()=>{
+   await cloud.sync?.flush();if(cloud.sync?.pending||cloud.sync?.blocked)throw new Error('Há alterações não sincronizadas. Exporte o rascunho ou resolva o conflito antes de sair.');
+   const {error}=await cloud.client.auth.signOut({scope:'local'});if(error)throw error;location.reload();
+  });
+  if(cloud.sync){
+   let importantTimer=null,lastImportant='';
+   cloud.mark=state=>{
+    const payload=structuredClone(state);if(payload.session){payload.session.running=false;payload.session.last=0;}
+    cloud.sync.mark(payload);
+    const summary=JSON.stringify({...payload,session:payload.session?{...payload.session,elapsed:0,phaseLeft:0}:null});
+    if(summary!==lastImportant){lastImportant=summary;clearTimeout(importantTimer);importantTimer=setTimeout(()=>cloud.sync.flush(),1200);}
+   };
+   setInterval(()=>{if(navigator.onLine)cloud.sync.flush();},30000);
+   window.addEventListener('online',()=>cloud.sync.flush());
+   document.addEventListener('visibilitychange',()=>{if(document.hidden)cloud.sync.flush();});
+   window.addEventListener('storage',e=>{if(e.key===cloud.key||e.key===cloud.key+':sync'){cloud.sync.blocked=true;cloud.status='conflict';cloud.renderStatus();}});
+  }
+  if(cloud.status==='conflict'||cloud.recovery)setTimeout(()=>{$('cloudButton').click();},300);
+ }
+};
