@@ -1,3 +1,13 @@
+function cloudErrorText(error){
+ const code=error?.code||'', message=error?.message||'';
+ const messages={invalid_credentials:'E-mail ou senha incorretos. Confira os dados e tente novamente.',email_not_confirmed:'Confirme seu e-mail antes de entrar. Confira também a pasta de spam.',user_already_exists:'Esta conta já existe. Entre ou use “Esqueci a senha”.',weak_password:'Use uma senha com pelo menos 8 caracteres.',over_email_send_rate_limit:'O limite de envio de e-mails foi atingido. Aguarde alguns minutos e tente novamente.',email_address_not_authorized:'O envio de confirmação para este e-mail ainda não está liberado. É necessário configurar o serviço de e-mails do aplicativo.',signup_disabled:'O cadastro de novas contas está desativado.'};
+ if(messages[code])return messages[code];
+ if(/invalid login credentials/i.test(message))return messages.invalid_credentials;
+ if(/email.*not confirmed/i.test(message))return messages.email_not_confirmed;
+ if(/sending confirmation email|email address not authorized/i.test(message))return 'Não foi possível enviar o e-mail de confirmação. O serviço de envio de e-mails do aplicativo precisa ser configurado.';
+ if(/fetch|network|timeout/i.test(message))return 'Não foi possível conectar. Confira sua internet e tente novamente.';
+ return /[À-ÿ]/.test(message)?message:'Não foi possível concluir a operação. Tente novamente.';
+}
 window.CicloCloud={
  async prepare(account){
   const recoveryRequested=location.hash.includes('type=recovery');
@@ -37,14 +47,14 @@ window.CicloCloud={
  },
  attach(cloud,hooks){
   const $=id=>document.getElementById(id);const label={local:'Somente neste navegador',pending:'Alterações pendentes',saving:'Salvando na nuvem…',saved:'Salvo na nuvem',conflict:'Conflito entre dispositivos',error:'Nuvem indisponível'};
-  cloud.renderStatus=()=>{$('cloudStatus').textContent=label[cloud.status||cloud.mode]||label.local;$('cloudStatus').dataset.status=cloud.status||cloud.mode;$('cloudIdentity').textContent=cloud.user?cloud.user.email:'Entre para acessar os mesmos estudos em outro dispositivo.';$('cloudConnected').hidden=!cloud.user;$('cloudLoginForm').hidden=!!cloud.user;$('cloudMessage').textContent=cloud.error?(cloud.error.message||'Não foi possível acessar a nuvem.'):'';$('cloudRecovery').hidden=!cloud.recovery;};
+  cloud.renderStatus=()=>{$('cloudStatus').textContent=label[cloud.status||cloud.mode]||label.local;$('cloudStatus').dataset.status=cloud.status||cloud.mode;$('cloudIdentity').textContent=cloud.user?cloud.user.email:'Entre para acessar os mesmos estudos em outro dispositivo.';$('cloudConnected').hidden=!cloud.user;$('cloudLoginForm').hidden=!!cloud.user;$('cloudMessage').textContent=cloud.error?cloudErrorText(cloud.error):(cloud.notice||'');$('cloudRecovery').hidden=!cloud.recovery;};
   cloud.renderStatus();
   if(cloud.account.standalone)$('cloudMigrate').hidden=true;
   $('cloudButton').onclick=()=>{$('cloudError').hidden=true;cloud.renderStatus();$('cloudDialog').showModal();};
-  const err=e=>{$('cloudError').textContent=e.message||String(e);$('cloudError').hidden=false;};
-  const run=async fn=>{const buttons=[...$('cloudDialog').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('cloudError').hidden=true;try{await fn();}catch(e){err(e);}finally{buttons.forEach(b=>b.disabled=false);$('cloudPassword').value='';}};
+  const err=e=>{$('cloudError').textContent=cloudErrorText(e);$('cloudError').hidden=false;};
+  const run=async fn=>{const buttons=[...$('cloudDialog').querySelectorAll('button')];buttons.forEach(b=>b.disabled=true);$('cloudError').hidden=true;cloud.notice='';$('cloudMessage').textContent='Aguarde…';try{await fn();}catch(e){$('cloudMessage').textContent='';err(e);}finally{buttons.forEach(b=>b.disabled=false);$('cloudPassword').value='';}};
   $('cloudLoginForm').onsubmit=e=>{e.preventDefault();run(async()=>{const {error}=await cloud.client.auth.signInWithPassword({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value});if(error)throw error;location.reload();});};
-  $('cloudSignUp').onclick=()=>{if(!$('cloudLoginForm').reportValidity())return;run(async()=>{const {data,error}=await cloud.client.auth.signUp({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value,options:{emailRedirectTo:new URL('./',location.href).href}});if(error)throw error;if(data.session){location.reload();return;}$('cloudMessage').textContent='Conta solicitada. Confirme o e-mail recebido e depois volte aqui para entrar. O projeto precisa ter envio de e-mail e endereço de retorno configurados.';});};
+  $('cloudSignUp').onclick=()=>{if(!$('cloudLoginForm').reportValidity())return;run(async()=>{const {data,error}=await cloud.client.auth.signUp({email:$('cloudEmail').value.trim(),password:$('cloudPassword').value,options:{emailRedirectTo:new URL('./',location.href).href}});if(error)throw error;if(data.session){location.reload();return;}cloud.notice='Confira seu e-mail para confirmar o cadastro. Verifique também a pasta de spam. Depois de confirmar, volte aqui e clique em Entrar na nuvem.';$('cloudMessage').textContent=cloud.notice;$('cloudMessage').scrollIntoView?.({block:'nearest'});});};
   $('cloudReset').onclick=()=>run(async()=>{const email=$('cloudEmail').value.trim();if(!email)throw new Error('Informe seu e-mail primeiro.');const {error}=await cloud.client.auth.resetPasswordForEmail(email,{redirectTo:new URL('./',location.href).href});if(error)throw error;$('cloudMessage').textContent='Se houver uma conta, você receberá as instruções por e-mail.';});
   $('cloudNewPasswordForm').onsubmit=e=>{e.preventDefault();run(async()=>{const {error}=await cloud.client.auth.updateUser({password:$('cloudNewPassword').value});if(error)throw error;$('cloudNewPassword').value='';cloud.recovery=false;history.replaceState(null,'',location.pathname);cloud.renderStatus();$('cloudMessage').textContent='Senha atualizada.';});};
   $('cloudSaveNow').onclick=()=>run(async()=>{await cloud.sync?.flush();if(cloud.sync?.blocked)throw new Error('A nuvem mudou em outra sessão. Baixe o backup deste rascunho e recarregue os dados da nuvem.');if(cloud.sync?.pending)throw new Error('Ainda há alterações pendentes. Confira a conexão e tente novamente.');});

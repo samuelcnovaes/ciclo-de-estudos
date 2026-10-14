@@ -1,0 +1,9 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {JSDOM} from 'jsdom';
+const html=readFileSync('index.html','utf8'),script=readFileSync('cloud-ui.js','utf8');
+function setup(auth){const dom=new JSDOM(html,{runScripts:'outside-only',url:'https://samuelcnovaes.github.io/ciclo-de-estudos/'}),w=dom.window;w.eval(script);const cloud={client:{auth},account:{standalone:true},mode:'local'};w.CicloCloud.attach(cloud,{});w.document.getElementById('cloudEmail').value='test@example.invalid';w.document.getElementById('cloudPassword').value='password123';return {dom,w,cloud};}
+test('signup confirmation remains visible after status refresh',async()=>{const {dom,w,cloud}=setup({signUp:async()=>({data:{session:null},error:null})});w.document.getElementById('cloudSignUp').click();await new Promise(r=>setTimeout(r,0));assert.match(w.document.getElementById('cloudMessage').textContent,/Confira seu e-mail/);cloud.renderStatus();assert.match(w.document.getElementById('cloudMessage').textContent,/confirmar o cadastro/);dom.window.close();});
+test('wrong password and mail delivery failures use Portuguese',async()=>{const {dom,w}=setup({signInWithPassword:async()=>({error:{code:'invalid_credentials',message:'Invalid login credentials'}})});w.document.getElementById('cloudLoginForm').dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,0));assert.match(w.document.getElementById('cloudError').textContent,/E-mail ou senha incorretos/);assert.match(w.cloudErrorText({message:'Error sending confirmation email'}),/Não foi possível enviar/);dom.window.close();});
+test('first paint has blue theme before scripts execute',()=>{const dom=new JSDOM(html);assert.equal(dom.window.document.body.dataset.theme,'blue');dom.window.close();});
