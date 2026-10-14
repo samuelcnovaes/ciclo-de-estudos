@@ -283,6 +283,7 @@ $('quickSubject').onchange=()=>{quickActivities();if($('quickSubject').value)sta
 
 setInterval(()=>{if(tab==='home'&&!document.querySelector('dialog[open]'))renderHome()},30000);
 
+const saveCycleBeforeGoals=$('saveCycle').onclick;$('saveCycle').onclick=()=>{const firstCycle=!state.stages.length&&!state.ui.cycleGoalsPrompted;saveCycleBeforeGoals();if(firstCycle&&state.stages.length&&!$('cycleDialog').open){state.ui.cycleGoalsPrompted=true;persist();openGoalsDialog();}};
 function openGoalsDialog(){goalsDraftMode=null;if($('goalsDialog').open)return;$('goalsDialog').showModal();renderGoals()}
 $('goalsDialog').addEventListener('close',()=>{$('goalsDialogContent').innerHTML='' });
 function preservedMetric(old,key,fallback){return old&&old.category===$('category').value&&!['Teoria','Revisão'].includes(old.category)?old[key]??fallback:fallback}
