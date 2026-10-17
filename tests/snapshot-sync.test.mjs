@@ -17,3 +17,5 @@ test('retains a draft on network failure and retries',async()=>{
 test('avoids writes for an unchanged payload',async()=>{
  let calls=0;const s=setup(async()=>{calls++;return{version:2};});await s.restore();s.mark({n:0});await s.flush();assert.equal(calls,0);
 });
+
+test('cache failure never blocks a confirmed database write',async()=>{const calls=[];const s=new SnapshotSync({load:async()=>({payload:{n:0},version:1}),write:async(p,v)=>{calls.push(p.n);return{version:v+1}},cache:()=>{throw new Error('quota')},onStatus:()=>{},validate:()=>{}});await s.restore();assert.doesNotThrow(()=>s.mark({n:12}));assert.ok(s.cacheError);await s.flush();assert.deepEqual(calls,[12]);assert.equal(s.pending,null);assert.equal(s.version,2);});

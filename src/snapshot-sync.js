@@ -8,12 +8,16 @@ export class SnapshotSync {
     if(row){this.validate(row.payload);this.version=row.version;this.saved=JSON.stringify(row.payload);}
     return row?.payload??null;
   }
+  cachePending() {
+    try { this.cache(this.pending); this.cacheError=null; }
+    catch(error) { this.cacheError=error; }
+  }
   mark(payload) {
     const text=JSON.stringify(payload);
     if(text===this.saved&&!this.pending)return;
     if(this.pending?.text===text)return;
     this.pending={payload:JSON.parse(text),text};
-    this.cache(this.pending);
+    this.cachePending();
     this.onStatus(this.blocked?'conflict':'pending');
   }
   async flush() {
@@ -28,7 +32,7 @@ export class SnapshotSync {
           if(!row){this.blocked=true;this.onStatus('conflict');return;}
           this.version=row.version;this.saved=next.text;
           if(this.pending===next)this.pending=null;
-          this.cache(this.pending);
+          this.cachePending();
         }
         this.onStatus('saved');
       } catch(e){if(e.code==='23505'){this.blocked=true;this.onStatus('conflict');}else this.onStatus('error',e);}
