@@ -1,3 +1,6 @@
+function cloudStateJSON(state){const full=JSON.stringify(state);if(full.length<1800000)return full;const active=state.exams?.find(e=>e.id===state.activeExamId),planData=new Set();for(const workspace of [state,...(state.exams||[]).filter(e=>e!==active).map(e=>e.data)]){const data=workspace?.plannings?.find(p=>p.id===workspace.activePlanningId)?.data;if(data)planData.add(data)}return JSON.stringify(state,function(key,value){if(key==='data'&&this===active)return {_activeExamRoot:true};if(key==='stages'&&planData.has(this))return {_activePlanStages:true};return value})}
+function cloudHydrateState(data){if(!data||typeof data!=='object')return data;function hydratePlan(workspace){const plan=workspace.plannings?.find(p=>p.id===workspace.activePlanningId);if(plan?.data?.stages?._activePlanStages)plan.data.stages=structuredClone(workspace.stages||[])}hydratePlan(data);for(const exam of data.exams||[]){if(exam.data?._activeExamRoot){const root={};for(const [key,value]of Object.entries(data))if(!['exams','activeExamId','ui'].includes(key))root[key]=structuredClone(value);root.examUi={setupStarted:data.ui?.setupStarted,setupGoalsComplete:data.ui?.setupGoalsComplete};exam.data=root}hydratePlan(exam.data)}return data}
+
 function cloudErrorText(error){
  const code=error?.code||'', message=error?.message||'';
  const messages={invalid_credentials:'E-mail ou senha incorretos. Confira os dados e tente novamente.',email_not_confirmed:'Confirme seu e-mail antes de entrar. Confira também a pasta de spam.',user_already_exists:'Esta conta já existe. Entre ou use “Esqueci a senha”.',weak_password:'Use uma senha com pelo menos 8 caracteres.',over_email_send_rate_limit:'O limite de envio de e-mails foi atingido. Aguarde alguns minutos e tente novamente.',email_address_not_authorized:'O envio de confirmação para este e-mail ainda não está liberado. É necessário configurar o serviço de e-mails do aplicativo.',signup_disabled:'O cadastro de novas contas está desativado.'};
@@ -22,14 +25,14 @@ window.CicloCloud={
   if(!cloud.user)return cloud;
   cloud.mode='cloud';cloud.key='ciclo-estudos-v1:cloud:'+cloud.user.id;
   const metaKey=cloud.key+':sync';let meta=null;
-  try{meta=JSON.parse(localStorage.getItem(metaKey));}catch{}
+  try{meta=JSON.parse(localStorage.getItem(metaKey));if(meta?.pending?.payload)meta.pending.payload=cloudHydrateState(meta.pending.payload);}catch{}
   const shape=p=>{if(!p||!Array.isArray(p.subjects)||!Array.isArray(p.stages)||!Array.isArray(p.history))throw new Error('Dados da nuvem incompatíveis. Exporte uma cópia antes de substituir.');};
   const load=async()=>{const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
   cloud.sync=new CicloSupabase.SnapshotSync({load,validate:shape,write:async(payload,version)=>{
    let q=client.from('ciclo_study_state');
    q=version===null?q.insert({user_id:cloud.user.id,payload}):q.update({payload}).eq('user_id',cloud.user.id).eq('version',version);
    const {data,error}=await q.select('version').maybeSingle();if(error)throw error;return data;
-  },cache:pending=>{localStorage.setItem(metaKey,JSON.stringify({version:cloud.sync.version,pending}));},onStatus:(status,error)=>{cloud.status=status;cloud.error=error||null;cloud.renderStatus?.();}});
+  },cache:pending=>{localStorage.setItem(metaKey,JSON.stringify({version:cloud.sync.version,pending:pending?{...pending,payload:JSON.parse(cloudStateJSON(pending.payload))}:pending}));},onStatus:(status,error)=>{cloud.status=status;cloud.error=error||null;cloud.renderStatus?.();}});
   try{
    let payload=await cloud.sync.restore();
    if(meta?.pending){
@@ -37,7 +40,7 @@ window.CicloCloud={
     if(meta.version!==cloud.sync.version){cloud.sync.blocked=true;cloud.status='conflict';}
     else cloud.status='pending';
    }else cloud.status='saved';
-   if(payload)localStorage.setItem(cloud.key,JSON.stringify(payload));
+   if(payload)localStorage.setItem(cloud.key,cloudStateJSON(payload));
    else localStorage.removeItem(cloud.key);
   }catch(e){
    cloud.error=e;cloud.status='error';cloud.sync.blocked=true;
@@ -63,7 +66,7 @@ window.CicloCloud={
    if(!confirm('Recarregar os dados da nuvem substitui o rascunho local desta conta. Baixe um backup antes se quiser preservá-lo.'))return;
    const {data,error}=await cloud.client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;
    if(!data)throw new Error('Esta conta ainda não tem dados na nuvem.');hooks.validate(data.payload);
-   localStorage.setItem(cloud.key,JSON.stringify(data.payload));localStorage.removeItem(cloud.key+':sync');location.reload();
+   localStorage.setItem(cloud.key,cloudStateJSON(data.payload));localStorage.removeItem(cloud.key+':sync');location.reload();
   });
   $('cloudMigrate').onclick=()=>run(async()=>{
    if(cloud.sync.blocked)throw new Error('Resolva a conexão ou o conflito antes de transferir os dados.');
