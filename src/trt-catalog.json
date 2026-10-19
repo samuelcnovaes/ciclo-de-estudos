@@ -1,0 +1,1040 @@
+[
+  {
+    "id": "trt5-ba-tecnico-administrativo-2022",
+    "contest": "Tribunal Regional do Trabalho da 5ª Região — Bahia",
+    "label": "TRT 5ª Região (BA) · Técnico Judiciário · Área Administrativa · 2022",
+    "year": 2022,
+    "bank": "FCC",
+    "sourceUrl": "https://dhg1h5j42swfq.cloudfront.net/2022/09/08202113/trt-5-edital.pdf",
+    "note": "Edital nº 01/2022, Técnico Judiciário — Área Administrativa, sem especialidade. Numeração dos tópicos organizada para estudo. Base histórica de 2022; não representa edital novo de 2026. Conteúdo do Anexo II, conhecimentos básicos e específicos do cargo Q17. Fonte: Diário Eletrônico da Justiça do Trabalho, nº 3554/2022, páginas 35 e 53–54.",
+    "subjects": [
+      {
+        "name": "Língua Portuguesa",
+        "sourceText": "Domínio da ortografia oficial. Emprego da acentuação gráfica. Emprego dos sinais de pontuação. Emprego do sinal indicativo de crase. Flexão nominal e verbal. Pronomes: emprego, formas de tratamento e colocação. Domínio dos mecanismos de coesão textual. Emprego de tempos e modos verbais. Vozes do verbo. Concordância nominal e verbal. Regência nominal e verbal. Morfossintaxe. Redação (confronto e reconhecimento de frases corretas e incorretas). Compreensão e interpretação de textos de gêneros variados. Reconhecimento de tipos e gêneros textuais. Figuras de linguagem. Discurso direto, indireto e indireto livre. Adequação da linguagem ao tipo de documento.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Domínio da ortografia oficial."
+          },
+          {
+            "number": "2",
+            "name": "Emprego da acentuação gráfica."
+          },
+          {
+            "number": "3",
+            "name": "Emprego dos sinais de pontuação."
+          },
+          {
+            "number": "4",
+            "name": "Emprego do sinal indicativo de crase."
+          },
+          {
+            "number": "5",
+            "name": "Flexão nominal e verbal."
+          },
+          {
+            "number": "6",
+            "name": "Pronomes: emprego, formas de tratamento e colocação."
+          },
+          {
+            "number": "7",
+            "name": "Domínio dos mecanismos de coesão textual."
+          },
+          {
+            "number": "8",
+            "name": "Emprego de tempos e modos verbais."
+          },
+          {
+            "number": "9",
+            "name": "Vozes do verbo."
+          },
+          {
+            "number": "10",
+            "name": "Concordância nominal e verbal."
+          },
+          {
+            "number": "11",
+            "name": "Regência nominal e verbal."
+          },
+          {
+            "number": "12",
+            "name": "Morfossintaxe."
+          },
+          {
+            "number": "13",
+            "name": "Redação (confronto e reconhecimento de frases corretas e incorretas)."
+          },
+          {
+            "number": "14",
+            "name": "Compreensão e interpretação de textos de gêneros variados."
+          },
+          {
+            "number": "15",
+            "name": "Reconhecimento de tipos e gêneros textuais."
+          },
+          {
+            "number": "16",
+            "name": "Figuras de linguagem."
+          },
+          {
+            "number": "17",
+            "name": "Discurso direto, indireto e indireto livre."
+          },
+          {
+            "number": "18",
+            "name": "Adequação da linguagem ao tipo de documento."
+          }
+        ]
+      },
+      {
+        "name": "Raciocínio Lógico-Matemático",
+        "sourceText": "- Raciocínio Lógico: Estrutura lógica de relações arbitrárias entre pessoas, lugares, objetos ou eventos fictícios; deduzir novas informações das relações fornecidas e avaliar as condições usadas para estabelecer a estrutura daquelas relações. Compreensão e elaboração da lógica das situações por meio de: raciocínio verbal, raciocínio matemático, raciocínio sequencial, orientação espacial e temporal, formação de conceitos, discriminação de elementos. Compreensão do processo lógico que, a partir de um conjunto de hipóteses, conduz, de forma válida, a conclusões determinadas. - Números inteiros e racionais: operações (adição, subtração, multiplicação, divisão, potenciação); expressões numéricas; múltiplos e divisores de números naturais; problemas. Frações e operações com frações. Números e grandezas proporcionais: razões e proporções; divisão em partes proporcionais; regra de três; porcentagem e problemas envolvendo regra de três simples, cálculos de porcentagem, acréscimos e descontos. - Noções de Estatística: medidas de tendência central (moda, mediana, média aritmética simples e ponderada) e de dispersão (desvio médio, amplitude, variância, desvio padrão); leitura e interpretação de gráficos (histogramas, setores, infográficos) e tabelas.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "- Raciocínio Lógico: Estrutura lógica de relações arbitrárias entre pessoas, lugares, objetos ou eventos fictícios; deduzir novas informações das relações fornecidas e avaliar as condições usadas para estabelecer a estrutura daquelas relações."
+          },
+          {
+            "number": "2",
+            "name": "Compreensão e elaboração da lógica das situações por meio de: raciocínio verbal, raciocínio matemático, raciocínio sequencial, orientação espacial e temporal, formação de conceitos, discriminação de elementos."
+          },
+          {
+            "number": "3",
+            "name": "Compreensão do processo lógico que, a partir de um conjunto de hipóteses, conduz, de forma válida, a conclusões determinadas. - Números inteiros e racionais: operações (adição, subtração, multiplicação, divisão, potenciação); expressões numéricas; múltiplos e divisores de números naturais; problemas."
+          },
+          {
+            "number": "4",
+            "name": "Frações e operações com frações."
+          },
+          {
+            "number": "5",
+            "name": "Números e grandezas proporcionais: razões e proporções; divisão em partes proporcionais; regra de três; porcentagem e problemas envolvendo regra de três simples, cálculos de porcentagem, acréscimos e descontos. - Noções de Estatística: medidas de tendência central (moda, mediana, média aritmética simples e ponderada) e de dispersão (desvio médio, amplitude, variância, desvio padrão); leitura e interpretação de gráficos (histogramas, setores, infográficos) e tabelas."
+          }
+        ]
+      },
+      {
+        "name": "Legislação",
+        "sourceText": "Lei nº 8.112/1990 e alterações: Das Disposições Preliminares; Do Provimento, Da Vacância, Da Remoção, Da Redistribuição e Da Substituição; Dos Direitos e Vantagens: Do Vencimento e da Remuneração, Das Vantagens, Das Férias, Das Licenças e Dos Afastamentos; Do Regime Disciplinar: Dos Deveres, Das Proibições, Da Acumulação, Das Responsabilidades e Das Penalidades. Processo administrativo disciplinar. Lei nº 9.784/1999. Lei nº 8.429/1992 e Lei nº 14.230/2021. Nova Lei de Licitações (Lei 14.133/2021). Lei n° 13.709/2018 (LGPD). Lei 13.146/2015 (Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência). Regimento Interno do TRT da 5ª Região. Resolução CNJ n° 400/2021 (Política de Sustentabilidade no âmbito do Poder Judiciário).",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Lei nº 8.112/1990 e alterações: Das Disposições Preliminares; Do Provimento, Da Vacância, Da Remoção, Da Redistribuição e Da Substituição; Dos Direitos e Vantagens: Do Vencimento e da Remuneração, Das Vantagens, Das Férias, Das Licenças e Dos Afastamentos; Do Regime Disciplinar: Dos Deveres, Das Proibições, Da Acumulação, Das Responsabilidades e Das Penalidades."
+          },
+          {
+            "number": "2",
+            "name": "Processo administrativo disciplinar."
+          },
+          {
+            "number": "3",
+            "name": "Lei nº 9.784/1999. Lei nº 8.429/1992 e Lei nº 14.230/2021. Nova Lei de Licitações (Lei 14.133/2021)."
+          },
+          {
+            "number": "4",
+            "name": "Lei n° 13.709/2018 (Lei Geral de Proteção de Dados Pessoais (LGPD))."
+          },
+          {
+            "number": "5",
+            "name": "Lei 13.146/2015 (Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência)."
+          },
+          {
+            "number": "6",
+            "name": "Regimento Interno do TRT da 5ª Região."
+          },
+          {
+            "number": "7",
+            "name": "Resolução CNJ n° 400/2021 (Política de Sustentabilidade no âmbito do Poder Judiciário)."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito Constitucional",
+        "sourceText": "Da aplicabilidade das normas constitucionais: normas de eficácia plena, contida e limitada; normas programáticas. Princípios fundamentais. Dos direitos e garantias fundamentais: dos direitos e deveres individuais e coletivos; dos direitos sociais; dos direitos de nacionalidade; dos direitos políticos. Dos partidos políticos. Da organização político-administrativa: da União. Das competências da União, Estados e Municípios. Da Administração Pública: disposições gerais; dos servidores públicos. Da organização dos Poderes. Do Poder Executivo: do Presidente e do VicePresidente da república. Das atribuições e responsabilidades do Presidente da República. Do Poder Legislativo: do processo legislativo. Da fiscalização contábil, financeira e orçamentária. Do Poder Judiciário: disposições gerais; do Supremo Tribunal Federal; do Conselho Nacional de Justiça: organização e competência. Do Superior Tribunal de Justiça. Do Tribunal Superior do Trabalho, dos Tribunais Regionais do Trabalho e dos Juízes do Trabalho. Das funções essenciais à Justiça: do Ministério Público; da Advocacia Pública; da Advocacia e da Defensoria Pública.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Da aplicabilidade das normas constitucionais: normas de eficácia plena, contida e limitada; normas programáticas."
+          },
+          {
+            "number": "2",
+            "name": "Princípios fundamentais."
+          },
+          {
+            "number": "3",
+            "name": "Dos direitos e garantias fundamentais: dos direitos e deveres individuais e coletivos; dos direitos sociais; dos direitos de nacionalidade; dos direitos políticos."
+          },
+          {
+            "number": "4",
+            "name": "Dos partidos políticos."
+          },
+          {
+            "number": "5",
+            "name": "Da organização político-administrativa: da União."
+          },
+          {
+            "number": "6",
+            "name": "Das competências da União, Estados e Municípios."
+          },
+          {
+            "number": "7",
+            "name": "Da Administração Pública: disposições gerais; dos servidores públicos."
+          },
+          {
+            "number": "8",
+            "name": "Da organização dos Poderes."
+          },
+          {
+            "number": "9",
+            "name": "Do Poder Executivo: do Presidente e do VicePresidente da república."
+          },
+          {
+            "number": "10",
+            "name": "Das atribuições e responsabilidades do Presidente da República."
+          },
+          {
+            "number": "11",
+            "name": "Do Poder Legislativo: do processo legislativo."
+          },
+          {
+            "number": "12",
+            "name": "Da fiscalização contábil, financeira e orçamentária."
+          },
+          {
+            "number": "13",
+            "name": "Do Poder Judiciário: disposições gerais; do Supremo Tribunal Federal; do Conselho Nacional de Justiça: organização e competência."
+          },
+          {
+            "number": "14",
+            "name": "Do Superior Tribunal de Justiça."
+          },
+          {
+            "number": "15",
+            "name": "Do Tribunal Superior do Trabalho, dos Tribunais Regionais do Trabalho e dos Juízes do Trabalho."
+          },
+          {
+            "number": "16",
+            "name": "Das funções essenciais à Justiça: do Ministério Público; da Advocacia Pública; da Advocacia e da Defensoria Pública."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito Administrativo",
+        "sourceText": "Administração pública. Regime jurídico administrativo. Princípios constitucionais e legais da Administração Pública. Princípios administrativos implícitos. Lei de Introdução às normas do Direito Brasileiro (Decreto-lei nº 4.657/1942) e sua aplicação na Administração Pública. Poderes da Administração Pública. Poderes e deveres dos administradores públicos. Uso e abuso do poder. Lei de abuso de autoridade (Lei nº 13.869/2019) Organização da Administração Direta e Indireta. Órgãos públicos. Aspectos gerais da Administração Direta. Autarquias. Empresas públicas e sociedades de economia mista. Fundações públicas. Consórcios públicos. Agências. Entes de colaboração e entidades paraestatais. Ato administrativo. Conceito, características e atributos. Elementos e requisitos de validade. Classificação dos atos administrativos. Formação e efeitos. Extinção, revogação, invalidação e convalidação. Cassação e caducidade. Processo administrativo. Lei nº 9.784/1999. Controle da administração pública. Classificações relativas ao controle da Administração Pública. Controle externo e procedimentos de tomadas de contas. Lei de Improbidade Administrativa (Lei nº 8.429/1992 com redação dada pela Lei nº 14.230/2021). Licitação. Conceito, natureza jurídica, objeto e finalidade. Princípios básicos e correlatos. Modalidades. Obrigatoriedade, dispensa e inexigibilidade. Procedimento licitatório. Anulação, revogação e recursos administrativos. Sanções e procedimento sancionatório. Crimes em licitações e contratos administrativos. Lei nº 14.133/2021. Regime jurídico dos servidores públicos civis da União, das autarquias e das fundações públicas federais (Lei nº 8.112/1990 atualizada).",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Administração pública."
+          },
+          {
+            "number": "2",
+            "name": "Regime jurídico administrativo."
+          },
+          {
+            "number": "3",
+            "name": "Princípios constitucionais e legais da Administração Pública."
+          },
+          {
+            "number": "4",
+            "name": "Princípios administrativos implícitos."
+          },
+          {
+            "number": "5",
+            "name": "Lei de Introdução às normas do Direito Brasileiro (Decreto-lei nº 4.657/1942) e sua aplicação na Administração Pública."
+          },
+          {
+            "number": "6",
+            "name": "Poderes da Administração Pública."
+          },
+          {
+            "number": "7",
+            "name": "Poderes e deveres dos administradores públicos."
+          },
+          {
+            "number": "8",
+            "name": "Uso e abuso do poder."
+          },
+          {
+            "number": "9",
+            "name": "Lei de abuso de autoridade (Lei nº 13.869/2019) Organização da Administração Direta e Indireta."
+          },
+          {
+            "number": "10",
+            "name": "Órgãos públicos."
+          },
+          {
+            "number": "11",
+            "name": "Aspectos gerais da Administração Direta."
+          },
+          {
+            "number": "12",
+            "name": "Autarquias."
+          },
+          {
+            "number": "13",
+            "name": "Empresas públicas e sociedades de economia mista."
+          },
+          {
+            "number": "14",
+            "name": "Fundações públicas."
+          },
+          {
+            "number": "15",
+            "name": "Consórcios públicos."
+          },
+          {
+            "number": "16",
+            "name": "Agências."
+          },
+          {
+            "number": "17",
+            "name": "Entes de colaboração e entidades paraestatais."
+          },
+          {
+            "number": "18",
+            "name": "Ato administrativo."
+          },
+          {
+            "number": "19",
+            "name": "Conceito, características e atributos."
+          },
+          {
+            "number": "20",
+            "name": "Elementos e requisitos de validade."
+          },
+          {
+            "number": "21",
+            "name": "Classificação dos atos administrativos."
+          },
+          {
+            "number": "22",
+            "name": "Formação e efeitos."
+          },
+          {
+            "number": "23",
+            "name": "Extinção, revogação, invalidação e convalidação."
+          },
+          {
+            "number": "24",
+            "name": "Cassação e caducidade."
+          },
+          {
+            "number": "25",
+            "name": "Processo administrativo."
+          },
+          {
+            "number": "26",
+            "name": "Lei nº 9.784/1999. Controle da administração pública."
+          },
+          {
+            "number": "27",
+            "name": "Classificações relativas ao controle da Administração Pública."
+          },
+          {
+            "number": "28",
+            "name": "Controle externo e procedimentos de tomadas de contas."
+          },
+          {
+            "number": "29",
+            "name": "Lei de Improbidade Administrativa (Lei nº 8.429/1992 com redação dada pela Lei nº 14.230/2021)."
+          },
+          {
+            "number": "30",
+            "name": "Licitação."
+          },
+          {
+            "number": "31",
+            "name": "Conceito, natureza jurídica, objeto e finalidade."
+          },
+          {
+            "number": "32",
+            "name": "Princípios básicos e correlatos."
+          },
+          {
+            "number": "33",
+            "name": "Modalidades."
+          },
+          {
+            "number": "34",
+            "name": "Obrigatoriedade, dispensa e inexigibilidade."
+          },
+          {
+            "number": "35",
+            "name": "Procedimento licitatório."
+          },
+          {
+            "number": "36",
+            "name": "Anulação, revogação e recursos administrativos."
+          },
+          {
+            "number": "37",
+            "name": "Sanções e procedimento sancionatório."
+          },
+          {
+            "number": "38",
+            "name": "Crimes em licitações e contratos administrativos."
+          },
+          {
+            "number": "39",
+            "name": "Lei nº 14.133/2021. Regime jurídico dos servidores públicos civis da União, das autarquias e das fundações públicas federais (Lei nº 8.112/1990 atualizada)."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Administração Pública",
+        "sourceText": "Características básicas das organizações formais modernas: tipos de estrutura organizacional, natureza, finalidades e critérios de departamentalização. Convergências e diferenças entre a gestão pública e a gestão privada. Princípios básicos da Administração Pública. Gestão de resultados na produção de serviços públicos. Comunicação na gestão pública e gestão de redes organizacionais. Gestão e avaliação de desempenho. Processo organizacional: planejamento, direção, coordenação, comunicação, controle e avaliação. Gestão estratégica: planejamento estratégico, tático e operacional. Gestão de pessoas do quadro próprio e terceirizadas. Gestão por Processos. Gestão por Projetos. Gestão de contratos. Gestão da Qualidade: excelência nos serviços públicos. Motivação. Liderança. Tipos de decisão e processo decisório.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Características básicas das organizações formais modernas: tipos de estrutura organizacional, natureza, finalidades e critérios de departamentalização."
+          },
+          {
+            "number": "2",
+            "name": "Convergências e diferenças entre a gestão pública e a gestão privada."
+          },
+          {
+            "number": "3",
+            "name": "Princípios básicos da Administração Pública."
+          },
+          {
+            "number": "4",
+            "name": "Gestão de resultados na produção de serviços públicos."
+          },
+          {
+            "number": "5",
+            "name": "Comunicação na gestão pública e gestão de redes organizacionais."
+          },
+          {
+            "number": "6",
+            "name": "Gestão e avaliação de desempenho."
+          },
+          {
+            "number": "7",
+            "name": "Processo organizacional: planejamento, direção, coordenação, comunicação, controle e avaliação."
+          },
+          {
+            "number": "8",
+            "name": "Gestão estratégica: planejamento estratégico, tático e operacional."
+          },
+          {
+            "number": "9",
+            "name": "Gestão de pessoas do quadro próprio e terceirizadas."
+          },
+          {
+            "number": "10",
+            "name": "Gestão por Processos."
+          },
+          {
+            "number": "11",
+            "name": "Gestão por Projetos."
+          },
+          {
+            "number": "12",
+            "name": "Gestão de contratos."
+          },
+          {
+            "number": "13",
+            "name": "Gestão da Qualidade: excelência nos serviços públicos."
+          },
+          {
+            "number": "14",
+            "name": "Motivação."
+          },
+          {
+            "number": "15",
+            "name": "Liderança."
+          },
+          {
+            "number": "16",
+            "name": "Tipos de decisão e processo decisório."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito do Trabalho",
+        "sourceText": "Dos princípios e fontes do Direito do Trabalho. Dos direitos constitucionais dos trabalhadores (art. 7º da CF/1988). Da relação de trabalho e da relação de emprego: requisitos e distinção. Dos sujeitos do contrato de trabalho stricto sensu: do empregado e do empregador: conceito e caracterização; dos poderes do empregador no contrato de trabalho. Do grupo econômico; da sucessão de empregadores; da responsabilidade solidária. Do contrato individual de trabalho: conceito, classificação e características. Da alteração do contrato de trabalho: alteração unilateral e bilateral; o jus variandi. Da suspensão e interrupção do contrato de trabalho: caracterização e distinção. Da rescisão do contrato de trabalho: das justas causas; da despedida indireta; da dispensa arbitrária; da culpa recíproca; da indenização. EOS NCURSO PÚBLICO PARA O PROVIMENTO DE CARGOS DO QUADRO PERMANENTE DE PESSOAL Do aviso prévio. Da duração do trabalho; da jornada de trabalho; dos períodos de descanso; do intervalo para repouso e alimentação; do descanso semanal remunerado; do trabalho noturno e do trabalho extraordinário. Do salário mínimo; irredutibilidade e garantia. Das férias: do direito a férias e da sua duração; da concessão e da época das férias; da remuneração e do abono de férias. Do salário e da remuneração: conceito e distinções; composição do salário; modalidades de salário; formas e meios de pagamento do salário; 13º salário. Do FGTS. Da prescrição e decadência. Da segurança e medicina no trabalho: das atividades perigosas ou insalubres. Da proteção ao trabalho do menor. Da proteção ao trabalho da mulher; da estabilidade da gestante; da licença-maternidade. Do direito coletivo do trabalho: das convenções e acordos coletivos de trabalho. Da renúncia e transação. Do teletrabalho (Lei nº 13.467/2017 atualizada). Dano moral nas relações de trabalho. Súmulas e Orientações da Jurisprudência uniformizada do Tribunal Superior do Trabalho sobre Direito do Trabalho. Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito do Trabalho. Instruções e atos Normativos do TST em matéria de Direito do Trabalho. Reforma Trabalhista – Lei nº 13.467/2017 atualizada.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Dos princípios e fontes do Direito do Trabalho."
+          },
+          {
+            "number": "2",
+            "name": "Dos direitos constitucionais dos trabalhadores (art. 7º da Constituição Federal de 1988 (CF/1988))."
+          },
+          {
+            "number": "3",
+            "name": "Da relação de trabalho e da relação de emprego: requisitos e distinção."
+          },
+          {
+            "number": "4",
+            "name": "Dos sujeitos do contrato de trabalho stricto sensu: do empregado e do empregador: conceito e caracterização; dos poderes do empregador no contrato de trabalho."
+          },
+          {
+            "number": "5",
+            "name": "Do grupo econômico; da sucessão de empregadores; da responsabilidade solidária."
+          },
+          {
+            "number": "6",
+            "name": "Do contrato individual de trabalho: conceito, classificação e características."
+          },
+          {
+            "number": "7",
+            "name": "Da alteração do contrato de trabalho: alteração unilateral e bilateral; o jus variandi."
+          },
+          {
+            "number": "8",
+            "name": "Da suspensão e interrupção do contrato de trabalho: caracterização e distinção."
+          },
+          {
+            "number": "9",
+            "name": "Da rescisão do contrato de trabalho: das justas causas; da despedida indireta; da dispensa arbitrária; da culpa recíproca; da indenização."
+          },
+          {
+            "number": "10",
+            "name": "EOS NCURSO PÚBLICO PARA O PROVIMENTO DE CARGOS DO QUADRO PERMANENTE DE PESSOAL Do aviso prévio."
+          },
+          {
+            "number": "11",
+            "name": "Da duração do trabalho; da jornada de trabalho; dos períodos de descanso; do intervalo para repouso e alimentação; do descanso semanal remunerado; do trabalho noturno e do trabalho extraordinário."
+          },
+          {
+            "number": "12",
+            "name": "Do salário mínimo; irredutibilidade e garantia."
+          },
+          {
+            "number": "13",
+            "name": "Das férias: do direito a férias e da sua duração; da concessão e da época das férias; da remuneração e do abono de férias."
+          },
+          {
+            "number": "14",
+            "name": "Do salário e da remuneração: conceito e distinções; composição do salário; modalidades de salário; formas e meios de pagamento do salário; 13º salário."
+          },
+          {
+            "number": "15",
+            "name": "Do Fundo de Garantia do Tempo de Serviço (FGTS)."
+          },
+          {
+            "number": "16",
+            "name": "Da prescrição e decadência."
+          },
+          {
+            "number": "17",
+            "name": "Da segurança e medicina no trabalho: das atividades perigosas ou insalubres."
+          },
+          {
+            "number": "18",
+            "name": "Da proteção ao trabalho do menor."
+          },
+          {
+            "number": "19",
+            "name": "Da proteção ao trabalho da mulher; da estabilidade da gestante; da licença-maternidade."
+          },
+          {
+            "number": "20",
+            "name": "Do direito coletivo do trabalho: das convenções e acordos coletivos de trabalho."
+          },
+          {
+            "number": "21",
+            "name": "Da renúncia e transação."
+          },
+          {
+            "number": "22",
+            "name": "Do teletrabalho (Lei nº 13.467/2017 atualizada)."
+          },
+          {
+            "number": "23",
+            "name": "Dano moral nas relações de trabalho."
+          },
+          {
+            "number": "24",
+            "name": "Súmulas e Orientações da Jurisprudência uniformizada do Tribunal Superior do Trabalho sobre Direito do Trabalho."
+          },
+          {
+            "number": "25",
+            "name": "Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito do Trabalho."
+          },
+          {
+            "number": "26",
+            "name": "Instruções e atos Normativos do Tribunal Superior do Trabalho (TST) em matéria de Direito do Trabalho."
+          },
+          {
+            "number": "27",
+            "name": "Reforma Trabalhista – Lei nº 13.467/2017 atualizada."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "trt3-mg-tecnico-administrativo-2022",
+    "contest": "Tribunal Regional do Trabalho da 3ª Região — Minas Gerais",
+    "label": "TRT 3ª Região (MG) · Técnico Judiciário · Área Administrativa · 2022",
+    "year": 2022,
+    "bank": "FUMARC",
+    "sourceUrl": "https://as1.trt3.jus.br/bd-trt3/handle/11103/74566",
+    "note": "Edital nº 01/2022, Técnico Judiciário — Área Administrativa, sem especialidade. Numeração dos tópicos organizada para estudo. Base histórica de 2022; não representa edital novo de 2026. Conhecimentos gerais e específicos do cargo 101. Informática conforme a retificação nº 02/2022: LibreOffice 7.1.6, Google Workspace, Chrome 103 e Firefox 91.",
+    "subjects": [
+      {
+        "name": "Língua Portuguesa",
+        "sourceText": "Compreensão e interpretação de textos: informações literais e inferências possíveis. Articulação textual: expressões referenciais, nexos, operadores sequenciais, coerência e coesão. Significação contextual de palavras e expressões. Conhecimentos de norma-padrão: a) emprego de crase; b) emprego de tempos e modos verbais; c) emprego e colocação de pronomes; d) regência nominal e verbal; e) concordância verbal e nominal; f) pontuação. Linguística: variação linguística, norma linguística.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Compreensão e interpretação de textos: informações literais e inferências possíveis."
+          },
+          {
+            "number": "2",
+            "name": "Articulação textual: expressões referenciais, nexos, operadores sequenciais, coerência e coesão."
+          },
+          {
+            "number": "3",
+            "name": "Significação contextual de palavras e expressões."
+          },
+          {
+            "number": "4",
+            "name": "Conhecimentos de norma-padrão: a) emprego de crase; b) emprego de tempos e modos verbais; c) emprego e colocação de pronomes; d) regência nominal e verbal; e) concordância verbal e nominal; f) pontuação."
+          },
+          {
+            "number": "5",
+            "name": "Linguística: variação linguística, norma linguística."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Informática",
+        "sourceText": "Sistema Operacional Windows 10: manipulação de arquivos e pastas, configurações, permissões etc. LibreOffice Writer 7.1.6 ou superior: estrutura básica dos documentos; operações com arquivos, criação e uso de modelos; edição e formatação de textos; cabeçalhos e rodapé; parágrafos; fontes; colunas; marcadores simbólicos e numéricos; tabelas e texto multicolunados; configuração de páginas e impressão; ortografia e gramática; controle de quebras; numeração de páginas; legendas; índices; inserção de objetos; campos predefinidos, caixas de texto e caracteres especiais; desenhos e cliparts; uso da barra de ferramentas, régua, janelas, atalhos e menus; mala direta e proteção de documentos. LibreOffice Calc 7.1.6 ou superior: estrutura básica das planilhas, conceitos de células, linhas, colunas, pastas e gráficos, elaboração de tabelas e gráficos, uso de fórmulas, funções e macros, impressão, inserção de objetos, campos predefinidos, controle de quebras, numeração de páginas, obtenção de dados externos, classificação, uso da barra de ferramentas, atalhos e menus. LibreOffice Impress 7.1.6 ou superior: estrutura básica de apresentações, edição e formatação, criação de apresentações, configuração da aparência da apresentação, impressão de apresentações, multimídia, desenho e clipart, uso da barra de ferramentas, atalhos e menus. Google Workspace - Correio Eletrônico (Gmail), Documentos, Planilhas, Drive, Chat, Agenda, Apresentações, Meet. Google Chrome 103.x ou superior e Mozilla Firefox 91.x ou superior: Navegação na Internet. Segurança: Tipos de vírus, Cavalos de Tróia, Malwares, Worms, Spyware, Phishing, Pharming, Ransomwares, Spam.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Sistema Operacional Windows 10: manipulação de arquivos e pastas, configurações, permissões etc."
+          },
+          {
+            "number": "2",
+            "name": "LibreOffice Writer 7.1.6 ou superior: estrutura básica dos documentos; operações com arquivos, criação e uso de modelos; edição e formatação de textos; cabeçalhos e rodapé; parágrafos; fontes; colunas; marcadores simbólicos e numéricos; tabelas e texto multicolunados; configuração de páginas e impressão; ortografia e gramática; controle de quebras; numeração de páginas; legendas; índices; inserção de objetos; campos predefinidos, caixas de texto e caracteres especiais; desenhos e cliparts; uso da barra de ferramentas, régua, janelas, atalhos e menus; mala direta e proteção de documentos."
+          },
+          {
+            "number": "3",
+            "name": "LibreOffice Calc 7.1.6 ou superior: estrutura básica das planilhas, conceitos de células, linhas, colunas, pastas e gráficos, elaboração de tabelas e gráficos, uso de fórmulas, funções e macros, impressão, inserção de objetos, campos predefinidos, controle de quebras, numeração de páginas, obtenção de dados externos, classificação, uso da barra de ferramentas, atalhos e menus."
+          },
+          {
+            "number": "4",
+            "name": "LibreOffice Impress 7.1.6 ou superior: estrutura básica de apresentações, edição e formatação, criação de apresentações, configuração da aparência da apresentação, impressão de apresentações, multimídia, desenho e clipart, uso da barra de ferramentas, atalhos e menus."
+          },
+          {
+            "number": "5",
+            "name": "Google Workspace - Correio Eletrônico (Gmail), Documentos, Planilhas, Drive, Chat, Agenda, Apresentações, Meet."
+          },
+          {
+            "number": "6",
+            "name": "Google Chrome 103.x ou superior e Mozilla Firefox 91.x ou superior: Navegação na Internet."
+          },
+          {
+            "number": "7",
+            "name": "Segurança: Tipos de vírus, Cavalos de Tróia, Malwares, Worms, Spyware, Phishing, Pharming, Ransomwares, Spam."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito Constitucional",
+        "sourceText": "Conceito de Constituição. Aplicabilidade e interpretação das normas constitucionais. Dos Princípios fundamentais. Dos direitos e garantias fundamentais: dos direitos e deveres individuais e coletivos; dos direitos sociais; dos direitos de nacionalidade; dos direitos políticos. Da organização do Estado: da organização político-administrativa; da União, dos Estados Federados, dos Municípios, do Distrito Federal e dos Territórios. Da Administração Pública: disposições gerais; dos servidores públicos. Da Organização dos Poderes. Do Poder Legislativo: do Congresso Nacional, das atribuições do Congresso Nacional, da Câmara dos Deputados e do Senado Federal. Do Processo Legislativo. Do Poder Executivo: do Presidente e do Vice-Presidente da República, Das atribuições e responsabilidades do Presidente da República. Do Poder Judiciário: disposições gerais; do Supremo Tribunal Federal; do Conselho Nacional de Justiça: organização e competência; do Superior Tribunal de Justiça; dos Tribunais e Juízes do Trabalho; do Conselho Superior da Justiça do Trabalho: organização e competência.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Conceito de Constituição."
+          },
+          {
+            "number": "2",
+            "name": "Aplicabilidade e interpretação das normas constitucionais."
+          },
+          {
+            "number": "3",
+            "name": "Dos Princípios fundamentais."
+          },
+          {
+            "number": "4",
+            "name": "Dos direitos e garantias fundamentais: dos direitos e deveres individuais e coletivos; dos direitos sociais; dos direitos de nacionalidade; dos direitos políticos."
+          },
+          {
+            "number": "5",
+            "name": "Da organização do Estado: da organização político-administrativa; da União, dos Estados Federados, dos Municípios, do Distrito Federal e dos Territórios."
+          },
+          {
+            "number": "6",
+            "name": "Da Administração Pública: disposições gerais; dos servidores públicos."
+          },
+          {
+            "number": "7",
+            "name": "Da Organização dos Poderes."
+          },
+          {
+            "number": "8",
+            "name": "Do Poder Legislativo: do Congresso Nacional, das atribuições do Congresso Nacional, da Câmara dos Deputados e do Senado Federal."
+          },
+          {
+            "number": "9",
+            "name": "Do Processo Legislativo."
+          },
+          {
+            "number": "10",
+            "name": "Do Poder Executivo: do Presidente e do Vice-Presidente da República, Das atribuições e responsabilidades do Presidente da República."
+          },
+          {
+            "number": "11",
+            "name": "Do Poder Judiciário: disposições gerais; do Supremo Tribunal Federal; do Conselho Nacional de Justiça: organização e competência; do Superior Tribunal de Justiça; dos Tribunais e Juízes do Trabalho; do Conselho Superior da Justiça do Trabalho: organização e competência."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito Administrativo",
+        "sourceText": "Princípios básicos da Administração Pública. Organização administrativa: administração direta e indireta; centralizada e descentralizada; autarquias, fundações, empresas públicas, sociedades de economia mista. Poderes administrativos: poder hierárquico, poder disciplinar, poder regulamentar, poder de polícia, uso e abuso do poder. Servidores públicos: cargo, emprego e função públicos. Ato administrativo: conceito, requisitos e atributos; anulação, revogação e convalidação; discricionariedade e vinculação. Lei n. 8.112/1990 (Regime Jurídico dos Servidores Públicos Civis da União e alterações): disposições preliminares; provimento, vacância, remoção, redistribuição e substituição; direitos e vantagens: vencimento e remuneração, vantagens, férias, licenças, afastamentos, direito de petição; regime disciplinar: deveres e proibições, acumulação, responsabilidades, penalidades; processo administrativo disciplinar. Nova Lei de Licitações e Contratos da Administração Pública (Lei n. 14.133/2021). Responsabilidade extracontratual do Estado. Processo administrativo (Lei n. 9.784/1999). Improbidade Administrativa (Lei n. 8.429/1992).",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Princípios básicos da Administração Pública."
+          },
+          {
+            "number": "2",
+            "name": "Organização administrativa: administração direta e indireta; centralizada e descentralizada; autarquias, fundações, empresas públicas, sociedades de economia mista."
+          },
+          {
+            "number": "3",
+            "name": "Poderes administrativos: poder hierárquico, poder disciplinar, poder regulamentar, poder de polícia, uso e abuso do poder."
+          },
+          {
+            "number": "4",
+            "name": "Servidores públicos: cargo, emprego e função públicos."
+          },
+          {
+            "number": "5",
+            "name": "Ato administrativo: conceito, requisitos e atributos; anulação, revogação e convalidação; discricionariedade e vinculação."
+          },
+          {
+            "number": "6",
+            "name": "Lei n. 8.112/1990 (Regime Jurídico dos Servidores Públicos Civis da União e alterações): disposições preliminares; provimento, vacância, remoção, redistribuição e substituição; direitos e vantagens: vencimento e remuneração, vantagens, férias, licenças, afastamentos, direito de petição; regime disciplinar: deveres e proibições, acumulação, responsabilidades, penalidades; processo administrativo disciplinar."
+          },
+          {
+            "number": "7",
+            "name": "Nova Lei de Licitações e Contratos da Administração Pública (Lei n. 14.133/2021)."
+          },
+          {
+            "number": "8",
+            "name": "Responsabilidade extracontratual do Estado."
+          },
+          {
+            "number": "9",
+            "name": "Processo administrativo (Lei n. 9.784/1999)."
+          },
+          {
+            "number": "10",
+            "name": "Improbidade Administrativa (Lei n. 8.429/1992)."
+          }
+        ]
+      },
+      {
+        "name": "Legislação",
+        "sourceText": "Lei n. 8.112/1990 e alterações: Das Disposições Preliminares; Do Provimento, Da Vacância, Da Remoção, Da Redistribuição e Da Substituição; Dos Direitos e Vantagens: Do Vencimento e da Remuneração, Das Vantagens, Das Férias, Das Licenças e Dos Afastamentos; Do Regime Disciplinar: Dos Deveres, Das Proibições, Da Acumulação, Das Responsabilidades e Das Penalidades. Processo administrativo disciplinar. Lei n. 9.784/1999. Lei n. 8.429/1992. Lei n. 13.709/2018 (LGPD). Lei 13.146/2015 (Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência). Regimento Interno do TRT da 3ª Região. Código de Ética do TRT3.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Lei n. 8.112/1990 e alterações: Das Disposições Preliminares; Do Provimento, Da Vacância, Da Remoção, Da Redistribuição e Da Substituição; Dos Direitos e Vantagens: Do Vencimento e da Remuneração, Das Vantagens, Das Férias, Das Licenças e Dos Afastamentos; Do Regime Disciplinar: Dos Deveres, Das Proibições, Da Acumulação, Das Responsabilidades e Das Penalidades."
+          },
+          {
+            "number": "2",
+            "name": "Processo administrativo disciplinar."
+          },
+          {
+            "number": "3",
+            "name": "Lei n. 9.784/1999. Lei n. 8.429/1992. Lei n. 13.709/2018 (Lei Geral de Proteção de Dados Pessoais (LGPD))."
+          },
+          {
+            "number": "4",
+            "name": "Lei 13.146/2015 (Institui a Lei Brasileira de Inclusão da Pessoa com Deficiência)."
+          },
+          {
+            "number": "5",
+            "name": "Regimento Interno do TRT da 3ª Região."
+          },
+          {
+            "number": "6",
+            "name": "Código de Ética do TRT3."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito do Trabalho",
+        "sourceText": "Dos princípios e fontes do Direito do Trabalho. Dos direitos constitucionais dos trabalhadores (art. 7º da CF/1988). Da relação de trabalho e da relação de emprego: requisitos e distinção. Trabalho intermitente. Dos sujeitos do contrato de trabalho stricto sensu: do empregado e do empregador: conceito e caracterização; dos poderes do empregador no contrato de trabalho. Do grupo econômico; da sucessão de empregadores; da responsabilidade solidária e subsidiária. Do contrato individual de trabalho: conceito, classificação e características. Da alteração do contrato de trabalho: alteração unilateral e bilateral; o jus variandi. Da suspensão e interrupção do contrato de trabalho: caracterização e distinção. Da rescisão do contrato de trabalho: das justas causas; da despedida indireta; da dispensa arbitrária; da despedida coletiva; da culpa recíproca; da indenização. Do aviso prévio. Da estabilidade e das garantias provisórias de emprego. Da duração do trabalho: da jornada de trabalho; Jornada In itinere; dos períodos de descanso; do intervalo para repouso e alimentação; do descanso semanal remunerado; do trabalho noturno e do trabalho extraordinário; do sistema de compensação de horas. Do salário mínimo: conceito, irredutibilidade e garantia. Das férias: do direito a férias e da sua duração; da concessão e da época das férias; das férias coletivas; da remuneração e do abono de férias. Do salário e da remuneração: conceito e distinções; composição do salário; modalidades de salário; formas e meios de pagamento do salário; 13º salário. Da equiparação salarial. Do FGTS. Da prescrição e decadência. Da segurança e medicina no trabalho: das atividades insalubres e perigosas. Das disposições especiais sobre duração e condições de Trabalho (Capítulo I do Título III da CLT). Da estabilidade da gestante; da licença-maternidade (art. 10 do ADCT). Do direito coletivo do trabalho: das convenções e acordos coletivos de trabalho. Do direito de greve. Do teletrabalho (Lei n. 13.467/2017). Dano moral nas relações de trabalho. Súmulas e Orientações da Jurisprudência uniformizada do Tribunal Superior do Trabalho sobre Direito do Trabalho. Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito do Trabalho. Instruções e atos Normativos do TST em matéria de Direito do Trabalho. Reforma Trabalhista – Lei n. 13467/2017. Acidentes do Trabalho. Princípios gerais de responsabilidade civil trabalhista.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Dos princípios e fontes do Direito do Trabalho."
+          },
+          {
+            "number": "2",
+            "name": "Dos direitos constitucionais dos trabalhadores (art. 7º da Constituição Federal de 1988 (CF/1988))."
+          },
+          {
+            "number": "3",
+            "name": "Da relação de trabalho e da relação de emprego: requisitos e distinção."
+          },
+          {
+            "number": "4",
+            "name": "Trabalho intermitente."
+          },
+          {
+            "number": "5",
+            "name": "Dos sujeitos do contrato de trabalho stricto sensu: do empregado e do empregador: conceito e caracterização; dos poderes do empregador no contrato de trabalho."
+          },
+          {
+            "number": "6",
+            "name": "Do grupo econômico; da sucessão de empregadores; da responsabilidade solidária e subsidiária."
+          },
+          {
+            "number": "7",
+            "name": "Do contrato individual de trabalho: conceito, classificação e características."
+          },
+          {
+            "number": "8",
+            "name": "Da alteração do contrato de trabalho: alteração unilateral e bilateral; o jus variandi."
+          },
+          {
+            "number": "9",
+            "name": "Da suspensão e interrupção do contrato de trabalho: caracterização e distinção."
+          },
+          {
+            "number": "10",
+            "name": "Da rescisão do contrato de trabalho: das justas causas; da despedida indireta; da dispensa arbitrária; da despedida coletiva; da culpa recíproca; da indenização."
+          },
+          {
+            "number": "11",
+            "name": "Do aviso prévio."
+          },
+          {
+            "number": "12",
+            "name": "Da estabilidade e das garantias provisórias de emprego."
+          },
+          {
+            "number": "13",
+            "name": "Da duração do trabalho: da jornada de trabalho; Jornada In itinere; dos períodos de descanso; do intervalo para repouso e alimentação; do descanso semanal remunerado; do trabalho noturno e do trabalho extraordinário; do sistema de compensação de horas."
+          },
+          {
+            "number": "14",
+            "name": "Do salário mínimo: conceito, irredutibilidade e garantia."
+          },
+          {
+            "number": "15",
+            "name": "Das férias: do direito a férias e da sua duração; da concessão e da época das férias; das férias coletivas; da remuneração e do abono de férias."
+          },
+          {
+            "number": "16",
+            "name": "Do salário e da remuneração: conceito e distinções; composição do salário; modalidades de salário; formas e meios de pagamento do salário; 13º salário."
+          },
+          {
+            "number": "17",
+            "name": "Da equiparação salarial."
+          },
+          {
+            "number": "18",
+            "name": "Do Fundo de Garantia do Tempo de Serviço (FGTS)."
+          },
+          {
+            "number": "19",
+            "name": "Da prescrição e decadência."
+          },
+          {
+            "number": "20",
+            "name": "Da segurança e medicina no trabalho: das atividades insalubres e perigosas."
+          },
+          {
+            "number": "21",
+            "name": "Das disposições especiais sobre duração e condições de Trabalho (Capítulo I do Título III da Consolidação das Leis do Trabalho (CLT))."
+          },
+          {
+            "number": "22",
+            "name": "Da estabilidade da gestante; da licença-maternidade (art. 10 do Ato das Disposições Constitucionais Transitórias (ADCT))."
+          },
+          {
+            "number": "23",
+            "name": "Do direito coletivo do trabalho: das convenções e acordos coletivos de trabalho."
+          },
+          {
+            "number": "24",
+            "name": "Do direito de greve."
+          },
+          {
+            "number": "25",
+            "name": "Do teletrabalho (Lei n. 13.467/2017)."
+          },
+          {
+            "number": "26",
+            "name": "Dano moral nas relações de trabalho."
+          },
+          {
+            "number": "27",
+            "name": "Súmulas e Orientações da Jurisprudência uniformizada do Tribunal Superior do Trabalho sobre Direito do Trabalho."
+          },
+          {
+            "number": "28",
+            "name": "Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito do Trabalho."
+          },
+          {
+            "number": "29",
+            "name": "Instruções e atos Normativos do Tribunal Superior do Trabalho (TST) em matéria de Direito do Trabalho."
+          },
+          {
+            "number": "30",
+            "name": "Reforma Trabalhista – Lei n. 13467/2017. Acidentes do Trabalho."
+          },
+          {
+            "number": "31",
+            "name": "Princípios gerais de responsabilidade civil trabalhista."
+          }
+        ]
+      },
+      {
+        "name": "Noções de Direito Processual do Trabalho",
+        "sourceText": "Da Justiça do Trabalho: organização e competência. Das Varas do Trabalho, dos Tribunais Regionais do Trabalho e do Tribunal Superior do Trabalho: jurisdição e competência. Dos serviços auxiliares da Justiça do Trabalho: das secretarias das Varas do Trabalho; dos distribuidores; dos oficiais de justiça e oficiais de justiça avaliadores. Dos Peritos Judiciais. Do Ministério Público do Trabalho: organização e competência. Do processo judiciário do trabalho: princípios gerais do processo trabalhista (aplicação subsidiária do CPC). Prescrição e decadência. Prescrição intercorrente. Dos atos, termos e prazos processuais. Da distribuição. Do valor da causa no Processo do Trabalho; Das custas e emolumentos. Custas e emolumentos para a Fazenda Pública. Hipóteses de isenção. Das partes e procuradores; do jus postulandi. Da assistência judiciária; dos honorários de advogado: sucumbenciais e honorários contratados. Dos conflitos de jurisdição/competência. Das audiências: de conciliação, de instrução e de julgamento; da notificação das partes; do arquivamento do processo; da revelia e confissão. Das provas. Dos dissídios individuais: da forma de reclamação e notificação; da reclamação escrita e verbal; da legitimidade para ajuizar. Do procedimento ordinário e sumaríssimo. Do Incidente de Desconsideração da Personalidade Jurídica. Da sentença e da coisa julgada. Do processo de Jurisdição Voluntária para homologação de acordo extrajudicial. Da liquidação da sentença: por cálculo, por artigos e por arbitramento. Da execução: execução provisória e definitiva; execução por prestações sucessivas; execução contra a Fazenda Pública; execução contra a massa falida. Da citação, do depósito da condenação e da nomeação de bens. Garantias na execução. Seguro-fiança e seguro-garantia; do mandado e da penhora. Dos embargos à execução; da impugnação à sentença; dos embargos de terceiros. Da praça e leilão; da arrematação; das custas na execução. Dos recursos no processo do trabalho. Normas atinentes ao Processo Judicial Eletrônico; Lei 13.467 de 2017 (Reforma Trabalhista). Súmulas e Orientações Jurisprudenciais do TST em matéria de Direito Processual do Trabalho; Instruções Normativas e Atos em Geral do TST em matéria de Direito Processual do Trabalho. Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito Processual do Trabalho. Lei n. 6.858/1980.",
+        "topics": [
+          {
+            "number": "1",
+            "name": "Da Justiça do Trabalho: organização e competência."
+          },
+          {
+            "number": "2",
+            "name": "Das Varas do Trabalho, dos Tribunais Regionais do Trabalho e do Tribunal Superior do Trabalho: jurisdição e competência."
+          },
+          {
+            "number": "3",
+            "name": "Dos serviços auxiliares da Justiça do Trabalho: das secretarias das Varas do Trabalho; dos distribuidores; dos oficiais de justiça e oficiais de justiça avaliadores."
+          },
+          {
+            "number": "4",
+            "name": "Dos Peritos Judiciais."
+          },
+          {
+            "number": "5",
+            "name": "Do Ministério Público do Trabalho: organização e competência."
+          },
+          {
+            "number": "6",
+            "name": "Do processo judiciário do trabalho: princípios gerais do processo trabalhista (aplicação subsidiária do Código de Processo Civil (CPC))."
+          },
+          {
+            "number": "7",
+            "name": "Prescrição e decadência."
+          },
+          {
+            "number": "8",
+            "name": "Prescrição intercorrente."
+          },
+          {
+            "number": "9",
+            "name": "Dos atos, termos e prazos processuais."
+          },
+          {
+            "number": "10",
+            "name": "Da distribuição."
+          },
+          {
+            "number": "11",
+            "name": "Do valor da causa no Processo do Trabalho; Das custas e emolumentos."
+          },
+          {
+            "number": "12",
+            "name": "Custas e emolumentos para a Fazenda Pública."
+          },
+          {
+            "number": "13",
+            "name": "Hipóteses de isenção."
+          },
+          {
+            "number": "14",
+            "name": "Das partes e procuradores; do jus postulandi."
+          },
+          {
+            "number": "15",
+            "name": "Da assistência judiciária; dos honorários de advogado: sucumbenciais e honorários contratados."
+          },
+          {
+            "number": "16",
+            "name": "Dos conflitos de jurisdição/competência."
+          },
+          {
+            "number": "17",
+            "name": "Das audiências: de conciliação, de instrução e de julgamento; da notificação das partes; do arquivamento do processo; da revelia e confissão."
+          },
+          {
+            "number": "18",
+            "name": "Das provas."
+          },
+          {
+            "number": "19",
+            "name": "Dos dissídios individuais: da forma de reclamação e notificação; da reclamação escrita e verbal; da legitimidade para ajuizar."
+          },
+          {
+            "number": "20",
+            "name": "Do procedimento ordinário e sumaríssimo."
+          },
+          {
+            "number": "21",
+            "name": "Do Incidente de Desconsideração da Personalidade Jurídica."
+          },
+          {
+            "number": "22",
+            "name": "Da sentença e da coisa julgada."
+          },
+          {
+            "number": "23",
+            "name": "Do processo de Jurisdição Voluntária para homologação de acordo extrajudicial."
+          },
+          {
+            "number": "24",
+            "name": "Da liquidação da sentença: por cálculo, por artigos e por arbitramento."
+          },
+          {
+            "number": "25",
+            "name": "Da execução: execução provisória e definitiva; execução por prestações sucessivas; execução contra a Fazenda Pública; execução contra a massa falida."
+          },
+          {
+            "number": "26",
+            "name": "Da citação, do depósito da condenação e da nomeação de bens."
+          },
+          {
+            "number": "27",
+            "name": "Garantias na execução."
+          },
+          {
+            "number": "28",
+            "name": "Seguro-fiança e seguro-garantia; do mandado e da penhora."
+          },
+          {
+            "number": "29",
+            "name": "Dos embargos à execução; da impugnação à sentença; dos embargos de terceiros."
+          },
+          {
+            "number": "30",
+            "name": "Da praça e leilão; da arrematação; das custas na execução."
+          },
+          {
+            "number": "31",
+            "name": "Dos recursos no processo do trabalho."
+          },
+          {
+            "number": "32",
+            "name": "Normas atinentes ao Processo Judicial Eletrônico; Lei 13.467 de 2017 (Reforma Trabalhista)."
+          },
+          {
+            "number": "33",
+            "name": "Súmulas e Orientações Jurisprudenciais do Tribunal Superior do Trabalho (TST) em matéria de Direito Processual do Trabalho; Instruções Normativas e Atos em Geral do Tribunal Superior do Trabalho (TST) em matéria de Direito Processual do Trabalho."
+          },
+          {
+            "number": "34",
+            "name": "Súmulas Vinculantes do Supremo Tribunal Federal relativas ao Direito Processual do Trabalho."
+          },
+          {
+            "number": "35",
+            "name": "Lei n. 6.858/1980."
+          }
+        ]
+      }
+    ]
+  }
+]
