@@ -23,12 +23,13 @@ window.CicloCloud={
   client.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){cloud.recovery=true;setTimeout(()=>document.getElementById('cloudButton')?.click(),100);}if(event==='SIGNED_OUT'&&cloud.user){location.reload();}});
   if(error){cloud.error=error;return cloud;}
   if(!cloud.user)return cloud;
-  if(window.PlatformCycleAccess){try{const access=await PlatformCycleAccess.check(client,cloud.user);cloud.platformRole=access.role;if(!access.allowed){cloud.deniedUser=cloud.user;cloud.user=null;cloud.notice=access.message;return cloud}}catch(error){cloud.error=error;cloud.fatal=true;return cloud}}
+  if(window.PlatformCycleAccess){try{const access=await PlatformCycleAccess.check(client,cloud.user);cloud.platformRole=access.role;if(!access.allowed){window.StudyAccessHistory?.record(client,'cycle','denied',cloud.user.id);cloud.deniedUser=cloud.user;cloud.user=null;cloud.notice=access.message;return cloud}}catch(error){cloud.error=error;cloud.fatal=true;return cloud}}
+  window.StudyAccessHistory?.record(client,'cycle','open',cloud.user.id);
   cloud.mode='cloud';cloud.key='ciclo-estudos-v1:cloud:'+cloud.user.id;
   const metaKey=cloud.key+':sync';let meta=null;
   try{meta=JSON.parse(localStorage.getItem(metaKey));if(meta?.base)meta.base=cloudHydrateState(meta.base);if(meta?.pending?.payload){meta.pending.payload=cloudHydrateState(meta.pending.payload);meta.pending.text=JSON.stringify(meta.pending.payload);if(meta.baselinePatch)meta.base=CicloSupabase.SnapshotSync.applyPatch(meta.pending.payload,meta.baselinePatch);}}catch{}
   const shape=p=>{if(!p||!Array.isArray(p.subjects)||!Array.isArray(p.stages)||!Array.isArray(p.history))throw new Error('Dados da nuvem incompatíveis. Exporte uma cópia antes de substituir.');};
-  const load=async()=>{if(window.PlatformCycleAccess){const access=await PlatformCycleAccess.check(client,cloud.user);if(!access.allowed){PlatformCycleAccess.block(client,access.message);throw Error(access.message)}}const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
+  const load=async()=>{if(window.PlatformCycleAccess){const access=await PlatformCycleAccess.check(client,cloud.user);if(!access.allowed){window.StudyAccessHistory?.record(client,'cycle','denied',cloud.user.id);PlatformCycleAccess.block(client,access.message);throw Error(access.message)}}const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
   cloud.sync=new CicloSupabase.SnapshotSync({load,validate:shape,write:async(payload,version)=>{
    let q=client.from('ciclo_study_state');
    q=version===null?q.insert({user_id:cloud.user.id,payload}):q.update({payload}).eq('user_id',cloud.user.id).eq('version',version);

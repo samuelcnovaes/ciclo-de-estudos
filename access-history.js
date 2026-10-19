@@ -1,0 +1,19 @@
+/* Authenticated, per-account app access events and administrator history. */
+window.StudyAccessHistory=(()=>{
+ const sent=new Set(),labels={open:'Abriu o aplicativo',login:'Entrou na conta',logout:'Saiu da conta',denied:'Acesso negado'},apps={cycle:'Planejamento',performance:'Desempenho'},esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ async function record(client,app,event='open',userId=''){
+  const key=userId+'|'+app+'|'+event;if(sent.has(key)||!client?.rpc)return false;
+  try{let query=client.rpc('platform_record_access',{app_name:app,event_name:event});if(query.abortSignal&&globalThis.AbortSignal?.timeout)query=query.abortSignal(AbortSignal.timeout(3000));const {error}=await query;if(!error){sent.add(key);return true}}catch{}return false;
+ }
+ function mount(client,host,{app='all',filterApps=true}={}){
+  host.innerHTML=`<section class="access-history"><h3>Histórico de acesso dos usuários</h3><p>Entradas e acessos registrados a partir desta atualização.</p><div class="access-history-filters"><label>Usuário<input type="email" data-access-email placeholder="Todos · ou informe o e-mail"></label><label>Aplicativo<select data-access-app>${filterApps?'<option value="all">Todos os aplicativos</option><option value="cycle">Planejamento</option><option value="performance">Desempenho</option>':'<option value="performance">Desempenho</option>'}</select></label><button type="button" data-access-filter>Consultar acessos</button></div><p data-access-message role="status" aria-live="polite"></p><div data-access-rows class="access-history-scroll"></div><button type="button" data-access-more hidden>Carregar acessos anteriores</button><details><summary>Último login registrado por conta</summary><p>O login é da conta compartilhada entre Planejamento e Desempenho.</p><div data-access-logins class="access-history-scroll"></div></details></section>`;
+  const $=selector=>host.querySelector(selector);$('[data-access-app]').value=app;let events=[],loading=false;
+  const format=value=>value?new Date(value).toLocaleString('pt-BR'):'Sem login registrado';
+  async function load(more=false){if(loading||!$('[data-access-email]').reportValidity())return;loading=true;$('[data-access-filter]').disabled=true;$('[data-access-more]').disabled=true;$('[data-access-message]').textContent='Carregando acessos…';
+   try{const {data,error}=await client.rpc('platform_access_history',{target_app:$('[data-access-app]').value,target_email:$('[data-access-email]').value.trim()||null,before_id:more?events.at(-1)?.id||null:null});if(error)throw error;const incoming=Array.isArray(data?.events)?data.events:[];events=more?[...events,...incoming]:incoming;$('[data-access-rows]').innerHTML='<table><thead><tr><th>Usuário</th><th>Aplicativo</th><th>Evento</th><th>Data e hora</th></tr></thead><tbody>'+events.map(e=>`<tr><td>${esc(e.email)}</td><td>${esc(apps[e.application]||e.application)}</td><td>${esc(labels[e.event]||e.event)}</td><td>${esc(format(e.created_at))}</td></tr>`).join('')+(events.length?'':'<tr><td colspan="4">Nenhum acesso registrado nesta seleção.</td></tr>')+'</tbody></table>';$('[data-access-logins]').innerHTML='<table><thead><tr><th>Usuário</th><th>Último login da conta</th></tr></thead><tbody>'+(data?.last_logins||[]).map(u=>`<tr><td>${esc(u.email)}</td><td>${esc(format(u.last_sign_in_at))}</td></tr>`).join('')+'</tbody></table>';$('[data-access-more]').hidden=incoming.length<50;$('[data-access-message]').textContent=events.length+' acessos exibidos.';
+   }catch(error){$('[data-access-message]').textContent=error.message||'Não foi possível consultar os acessos.'}finally{loading=false;$('[data-access-filter]').disabled=false;$('[data-access-more]').disabled=false}
+  }
+  $('[data-access-filter]').onclick=()=>load();$('[data-access-more]').onclick=()=>load(true);load();return {reload:()=>load()};
+ }
+ return {record,mount};
+})();
