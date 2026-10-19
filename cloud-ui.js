@@ -1,3 +1,5 @@
+// IndexedDB outbox survives reloads without the small localStorage quota.
+function cloudDurableStore(){let opening;function db(){if(!globalThis.indexedDB)return Promise.reject(Error('Armazenamento persistente indisponível.'));return opening??=new Promise((resolve,reject)=>{const r=indexedDB.open('study-cloud-outbox',1);r.onupgradeneeded=()=>r.result.createObjectStore('accounts');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});}return{async read(key){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('accounts','readonly'),r=t.objectStore('accounts').get(key);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});},async write(key,value){const d=await db();return new Promise((resolve,reject)=>{const t=d.transaction('accounts','readwrite');t.objectStore('accounts').put(value,key);t.oncomplete=()=>resolve();t.onerror=()=>reject(t.error);t.onabort=()=>reject(t.error||Error('Não foi possível preservar as alterações.'));});}};}
 function cloudStateJSON(state){const full=JSON.stringify(state);if(full.length<1800000)return full;const active=state.exams?.find(e=>e.id===state.activeExamId),planData=new Set();for(const workspace of [state,...(state.exams||[]).filter(e=>e!==active).map(e=>e.data)]){const data=workspace?.plannings?.find(p=>p.id===workspace.activePlanningId)?.data;if(data)planData.add(data)}return JSON.stringify(state,function(key,value){if(key==='data'&&this===active)return {_activeExamRoot:true};if(key==='stages'&&planData.has(this))return {_activePlanStages:true};return value})}
 function cloudHydrateState(data){if(!data||typeof data!=='object')return data;function hydratePlan(workspace){const plan=workspace.plannings?.find(p=>p.id===workspace.activePlanningId);if(plan?.data?.stages?._activePlanStages)plan.data.stages=structuredClone(workspace.stages||[])}hydratePlan(data);for(const exam of data.exams||[]){if(exam.data?._activeExamRoot){const root={};for(const [key,value]of Object.entries(data))if(!['exams','activeExamId','ui','syncRecovery'].includes(key))root[key]=structuredClone(value);root.examUi={setupStarted:data.ui?.setupStarted,setupGoalsComplete:data.ui?.setupGoalsComplete};exam.data=root}hydratePlan(exam.data)}return data}
 
@@ -15,7 +17,7 @@ window.CicloCloud={
  async prepare(account){
   const recoveryRequested=location.hash.includes('type=recovery');
   const client=CicloSupabase.createClient('https://hksxuvnevztwnyfbuftx.supabase.co','sb_publishable_MhGqEKd7AWRC2ICCUViylw_VKh8fzjk',{
-   auth:{storageKey:'ciclo-cloud-auth:'+account.id,detectSessionInUrl:true},global:{fetch:(url,options={})=>fetch(url,{...options,signal:options.signal||AbortSignal.timeout(15000)})}
+   auth:{storageKey:'ciclo-cloud-auth:'+account.id,detectSessionInUrl:true},global:{fetch:(url,options={})=>fetch(url,{...options,signal:options.signal||AbortSignal.timeout(45000)})}
   });
   const {data,error}=await client.auth.getSession();
   const session=data?.session;
@@ -26,15 +28,15 @@ window.CicloCloud={
   if(window.PlatformCycleAccess){try{const access=await PlatformCycleAccess.check(client,cloud.user);cloud.platformRole=access.role;if(!access.allowed){window.StudyAccessHistory?.record(client,'cycle','denied',cloud.user.id);cloud.deniedUser=cloud.user;cloud.user=null;cloud.notice=access.message;return cloud}}catch(error){cloud.error=error;cloud.fatal=true;return cloud}}
   window.StudyAccessHistory?.record(client,'cycle','open',cloud.user.id);
   cloud.mode='cloud';cloud.key='ciclo-estudos-v1:cloud:'+cloud.user.id;
-  const metaKey=cloud.key+':sync';let meta=null;
-  try{meta=JSON.parse(localStorage.getItem(metaKey));if(meta?.base)meta.base=cloudHydrateState(meta.base);if(meta?.pending?.payload){meta.pending.payload=cloudHydrateState(meta.pending.payload);meta.pending.text=JSON.stringify(meta.pending.payload);if(meta.baselinePatch)meta.base=CicloSupabase.SnapshotSync.applyPatch(meta.pending.payload,meta.baselinePatch);}}catch{}
+  const metaKey=cloud.key+':sync',durable=cloudDurableStore();let meta=null;cloud.durable=durable;
+  try{meta=JSON.parse(localStorage.getItem(metaKey));}catch{}try{const stored=await durable.read(metaKey);if(stored&&(!meta||stored.cachedAt>=(meta.cachedAt||0)))meta=stored;}catch(error){cloud.durableUnavailable=error}try{if(meta?.confirmed)meta.confirmed=cloudHydrateState(meta.confirmed);if(meta?.base)meta.base=cloudHydrateState(meta.base);if(meta?.pending?.payload){meta.pending.payload=cloudHydrateState(meta.pending.payload);meta.pending.text=JSON.stringify(meta.pending.payload);if(meta.baselinePatch)meta.base=CicloSupabase.SnapshotSync.applyPatch(meta.pending.payload,meta.baselinePatch);}if(!meta?.base&&meta?.confirmed)meta.base=meta.confirmed;}catch{}
   const shape=p=>{if(!p||!Array.isArray(p.subjects)||!Array.isArray(p.stages)||!Array.isArray(p.history))throw new Error('Dados da nuvem incompatíveis. Exporte uma cópia antes de substituir.');};
-  const load=async()=>{if(window.PlatformCycleAccess){const access=await PlatformCycleAccess.check(client,cloud.user);if(!access.allowed){window.StudyAccessHistory?.record(client,'cycle','denied',cloud.user.id);PlatformCycleAccess.block(client,access.message);throw Error(access.message)}}const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
+  const load=async()=>{if(window.PlatformCycleAccess){const access=await PlatformCycleAccess.check(client,cloud.user);if(!access.allowed){window.StudyAccessHistory?.record(client,'cycle','denied',cloud.user.id);PlatformCycleAccess.block(client,access.message);throw Error(access.message)}}if(cloud.sync?.baseKnown&&cloud.sync.base&&!cloud.needsRestore){const head=await client.from('ciclo_study_state').select('version').eq('user_id',cloud.user.id).maybeSingle();if(head.error)throw head.error;if(head.data?.version===cloud.sync.version)return {version:head.data.version,payload:cloud.sync.base};}const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;if(data?.payload)data.payload=cloudHydrateState(data.payload);return data;};
   cloud.sync=new CicloSupabase.SnapshotSync({load,validate:shape,write:async(payload,version)=>{
-   let q=client.from('ciclo_study_state');
+   payload=JSON.parse(cloudStateJSON(payload));let q=client.from('ciclo_study_state');
    q=version===null?q.insert({user_id:cloud.user.id,payload}):q.update({payload}).eq('user_id',cloud.user.id).eq('version',version);
    const {data,error}=await q.select('version').maybeSingle();if(error)throw error;return data;
-  },cache:pending=>{localStorage.setItem(metaKey,JSON.stringify({version:cloud.needsRestore?(meta?.version??null):cloud.sync.version,baselinePatch:pending&&cloud.sync.base?CicloSupabase.SnapshotSync.createPatch(pending.payload,cloud.sync.base):null,pending:pending?{payload:JSON.parse(cloudStateJSON(pending.payload))}:pending}));},onStatus:(status,error)=>{cloud.status=status;cloud.error=error||null;if(status==='saved')cloud.savedAt=new Date();cloud.renderStatus?.();}});
+  },cache:pending=>{const snapshot={cachedAt:Date.now(),version:cloud.needsRestore?(meta?.version??null):cloud.sync.version,baselinePatch:pending&&cloud.sync.base?CicloSupabase.SnapshotSync.createPatch(pending.payload,cloud.sync.base):null,pending:pending?{payload:JSON.parse(cloudStateJSON(pending.payload))}:null,confirmed:!pending&&cloud.sync.base?JSON.parse(cloudStateJSON(cloud.sync.base)):undefined};let localOK=false;try{localStorage.setItem(metaKey,JSON.stringify(snapshot));localOK=true}catch(error){cloud.localCacheError=error}const save=()=>durable.write(metaKey,snapshot).then(()=>{cloud.durableUnavailable=null;cloud.localProtected=true}).catch(error=>{cloud.durableUnavailable=error;cloud.localProtected=localOK;if(!localOK)throw error});cloud.cacheWrite=(cloud.cacheWrite||Promise.resolve()).catch(()=>{}).then(save);cloud.cacheWrite.catch(()=>{});return cloud.cacheWrite;},onStatus:(status,error)=>{cloud.status=status;cloud.error=error||null;if(status==='saved')cloud.savedAt=new Date();cloud.renderStatus?.();}});
   try{
    let payload=await cloud.sync.restore();
    if(meta?.pending){
@@ -42,11 +44,11 @@ window.CicloCloud={
     if(meta.version!==cloud.sync.version){const remote={payload:cloud.sync.base,version:cloud.sync.version};cloud.sync.base=meta.base||null;cloud.sync.baseKnown=!!meta.base;cloud.sync.version=meta.version;if(cloud.sync.rebase(remote)){payload=cloud.sync.pending?.payload||cloud.sync.base;cloud.status=cloud.sync.pending?'pending':'saved';}}
     else cloud.status='pending';
    }else cloud.status='saved';
-   if(payload){cloud.initialPayload=payload;try{localStorage.setItem(cloud.key,cloudStateJSON(payload))}catch(error){cloud.localCacheError=error}}
-   else localStorage.removeItem(cloud.key);
+   if(payload){cloud.initialPayload=payload;cloud.sync.cachePending();try{localStorage.setItem(cloud.key,cloudStateJSON(payload))}catch(error){cloud.localCacheError=error}}
+   else {try{localStorage.removeItem(cloud.key)}catch{}}
   }catch(e){
    cloud.error=e;cloud.status='error';cloud.sync.blocked=true;cloud.needsRestore=true;cloud.sync.base=meta?.base||null;cloud.sync.baseKnown=!!meta?.base;cloud.sync.version=meta?.version??null;if(meta?.pending)cloud.sync.pending=meta.pending;
-   if(!localStorage.getItem(cloud.key)){cloud.fatal=true;}
+   if(meta?.pending?.payload){cloud.initialPayload=meta.pending.payload;}else if(meta?.confirmed){cloud.initialPayload=meta.confirmed;}else if(!localStorage.getItem(cloud.key)){cloud.fatal=true;}
   }
   let reconnecting=null;
   cloud.retrySync=async()=>{
@@ -59,7 +61,7 @@ window.CicloCloud={
   return cloud;
  },
  attach(cloud,hooks){
-  const $=id=>document.getElementById(id);const label={local:'Somente neste navegador',pending:'Alterações aguardando envio',saving:'Salvando na nuvem…',saved:'Salvo na nuvem',conflict:'Conflito entre dispositivos',error:'Nuvem indisponível'};
+  const $=id=>document.getElementById(id);const label={local:'Somente neste navegador',pending:'Alterações aguardando envio',saving:'Salvando na nuvem…',saved:'Salvo na nuvem',conflict:'Conflito entre dispositivos',error:'Reconectando à nuvem…'};
   cloud.renderStatus=()=>{const differences=(cloud.sync?.pending?.payload||cloud.sync?.base)?.syncRecovery?.length||0;if(differences&&!cloud.notice)cloud.notice=differences+' diferenças simultâneas estão preservadas para recuperação.';$('cloudStatus').setAttribute('aria-live','polite');$('cloudStatus').title=cloud.status==='saved'?'Dados confirmados no Supabase'+(cloud.savedAt?' às '+cloud.savedAt.toLocaleTimeString('pt-BR'):''):cloud.sync?.pending?'Há alterações que ainda não foram confirmadas pelo Supabase. Mantenha esta página aberta até sincronizar.':'';const offline=typeof navigator!=='undefined'&&navigator.onLine===false;$('cloudStatus').textContent=offline?(cloud.sync?.pending?'Sem conexão — alterações aguardando envio':'Sem conexão'):(label[cloud.status||cloud.mode]||label.local);$('cloudStatus').dataset.status=offline?'offline':cloud.status||cloud.mode;$('cloudIdentity').textContent=cloud.user?cloud.user.email:'Entre para acessar os mesmos estudos em outro dispositivo.';$('cloudConnected').hidden=!cloud.user;$('cloudLoginForm').hidden=!!cloud.user;$('cloudMessage').textContent=cloud.error?cloudErrorText(cloud.error):(cloud.notice||'');$('cloudRecovery').hidden=!cloud.recovery;};
   window.addEventListener('online',()=>cloud.renderStatus());window.addEventListener('offline',()=>cloud.renderStatus());
   cloud.renderStatus();
@@ -73,12 +75,12 @@ window.CicloCloud={
   $('cloudReset').onclick=()=>run(async()=>{const email=$('cloudEmail').value.trim();if(!email)throw new Error('Informe seu e-mail primeiro.');const {error}=await cloud.client.auth.resetPasswordForEmail(email,{redirectTo:new URL('./',location.href).href});if(error)throw error;$('cloudMessage').textContent='Se houver uma conta, você receberá as instruções por e-mail.';});
   if(window.StudyAuth&&!cloud.user)StudyAuth.mount($('cloudLoginForm'),{product:'Planejamento',client:cloud.client,feedback:(message,error)=>{cloud.notice=error?'':message;$('cloudMessage').textContent=error?'':message;$('cloudError').hidden=!error;$('cloudError').textContent=error?message:''},success:()=>location.reload()});
   $('cloudNewPasswordForm').onsubmit=e=>{e.preventDefault();run(async()=>{const {error}=await cloud.client.auth.updateUser({password:$('cloudNewPassword').value});if(error)throw error;$('cloudNewPassword').value='';cloud.recovery=false;history.replaceState(null,'',location.pathname);cloud.renderStatus();$('cloudMessage').textContent='Senha atualizada.';});};
-  $('cloudSaveNow').onclick=()=>run(async()=>{await (cloud.retrySync?.()||cloud.sync?.flush());if(cloud.sync?.blocked)throw new Error('A nuvem mudou em outra sessão. Baixe o backup deste rascunho e recarregue os dados da nuvem.');if(cloud.sync?.pending)throw new Error('Ainda há alterações pendentes. Confira a conexão e tente novamente.');});
+  $('cloudSaveNow').onclick=()=>run(async()=>{await (cloud.retrySync?.()||cloud.sync?.flush());if(cloud.sync?.blocked)throw new Error('Não foi possível sincronizar agora. O aplicativo tentará novamente automaticamente.');if(cloud.sync?.pending)throw new Error(cloud.error?cloudErrorText(cloud.error):'Alterações preservadas neste dispositivo. O envio será retomado automaticamente.');});
   $('cloudExport').onclick=()=>hooks.export();
   $('cloudUseRemote').onclick=()=>run(async()=>{
    if(!confirm('Recarregar os dados da nuvem substitui o rascunho local desta conta. Baixe um backup antes se quiser preservá-lo.'))return;
    const {data,error}=await cloud.client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;
-   if(!data)throw new Error('Esta conta ainda não tem dados na nuvem.');hooks.validate(data.payload);
+   if(!data)throw new Error('Esta conta ainda não tem dados na nuvem.');data.payload=cloudHydrateState(data.payload);hooks.validate(data.payload);
    localStorage.setItem(cloud.key,cloudStateJSON(data.payload));localStorage.removeItem(cloud.key+':sync');location.reload();
   });
   $('cloudMigrate').onclick=()=>run(async()=>{
@@ -90,22 +92,22 @@ window.CicloCloud={
    hooks.replace(next);await cloud.sync.flush();if(cloud.sync.pending||cloud.sync.blocked)throw new Error('Transferência pendente. Baixe um backup e confira o status antes de sair.');$('cloudMessage').textContent='Estudos transferidos e salvos na nuvem.';
   });
   $('cloudSignOut').onclick=()=>run(async()=>{
-   await cloud.sync?.flush();if(cloud.sync?.pending||cloud.sync?.blocked)throw new Error('Há alterações não sincronizadas. Exporte o rascunho ou resolva o conflito antes de sair.');
+   await cloud.sync?.flush();if(cloud.sync?.pending||cloud.sync?.blocked)throw new Error('Há alterações aguardando envio. Aguarde a confirmação de sincronização antes de sair.');
    const {error}=await cloud.client.auth.signOut({scope:'local'});if(error)throw error;location.reload();
   });
   if(cloud.sync){
    cloud.sync.validate=payload=>hooks.validate(payload);
    cloud.sync.onRemote=payload=>{const current=hooks.receive?.(payload)||payload;try{localStorage.setItem(cloud.key,cloudStateJSON(current))}catch(error){cloud.localCacheError=error}const count=payload.syncRecovery?.length||0;if(count)cloud.notice='Alterações sincronizadas. '+count+' diferenças simultâneas foram preservadas em uma cópia de segurança.';cloud.renderStatus();};
    if(!$('cloudExportDifferences')){$('cloudExport').insertAdjacentHTML('afterend','<button type="button" id="cloudExportDifferences">Baixar diferenças preservadas</button>');$('cloudExportDifferences').onclick=()=>{const data=cloud.sync.pending?.payload||cloud.sync.base;if(!data?.syncRecovery?.length){cloud.notice='Não há diferenças simultâneas preservadas.';cloud.renderStatus();return}const url=URL.createObjectURL(new Blob([JSON.stringify({format:'ciclo-diferencas-sincronizacao',exportedAt:new Date().toISOString(),differences:data.syncRecovery},null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='diferencas-sincronizacao.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};}
-   cloud.mark=state=>{
+   let saveTimer=null,firstPendingAt=0;cloud.mark=state=>{
     const payload=structuredClone(state);if(payload.session){payload.session.running=false;payload.session.last=0;}
     cloud.sync.mark(payload);
-    (cloud.retrySync?.()||cloud.sync.flush());
+    clearTimeout(saveTimer);firstPendingAt||=Date.now();saveTimer=setTimeout(()=>{firstPendingAt=0;(cloud.retrySync?.()||cloud.sync.flush());},Date.now()-firstPendingAt>2000?0:500);
    };
-   setInterval(()=>{if(navigator.onLine&&!document.querySelector('dialog[open]')){if(cloud.needsRestore)cloud.retrySync();else cloud.sync.refresh();}},10000);
+   setInterval(()=>{if(navigator.onLine){if(cloud.needsRestore)cloud.retrySync();else cloud.sync.refresh();}},10000);
    window.addEventListener('online',()=>cloud.retrySync?.()||cloud.sync.flush());
    window.addEventListener('pagehide',()=>queueMicrotask(()=>cloud.sync.flush()));
-   window.addEventListener('beforeunload',event=>{if(cloud.sync.pending){cloud.sync.flush();event.preventDefault();event.returnValue='';}});
+   window.addEventListener('beforeunload',event=>{if(cloud.sync.pending||cloud.cacheWrite&&!cloud.localProtected){cloud.sync.flush();event.preventDefault();event.returnValue='';}});
    if(cloud.sync.pending)(cloud.retrySync?.()||cloud.sync.flush());
    document.addEventListener('visibilitychange',()=>{if(document.hidden)cloud.sync.flush();else if(navigator.onLine&&!document.querySelector('dialog[open]'))cloud.needsRestore?cloud.retrySync():cloud.sync.refresh();});
    window.addEventListener('storage',e=>{if(e.key===cloud.key||e.key===cloud.key+':sync'){if(!cloud.needsRestore&&!cloud.sync.blocked)cloud.sync.refresh();}});

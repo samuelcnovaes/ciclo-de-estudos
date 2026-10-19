@@ -12,7 +12,7 @@ export class SnapshotSync {
     return row?.payload??null;
   }
   cachePending() {
-    try { this.cache(this.pending); this.cacheError=null; }
+    try { const saved=this.cache(this.pending);this.cacheError=null;this.caching=Promise.resolve(saved).catch(error=>{this.cacheError=error;}); }
     catch(error) { this.cacheError=error; }
   }
   mark(payload) {
@@ -52,6 +52,7 @@ export class SnapshotSync {
         let attempts=0;
         while(this.pending&&!this.blocked){
           const next=this.pending;
+          await this.caching;
           let row;
           try{row=await this.write(next.payload,this.version)}catch(error){if(error.code!=='23505')throw error;row=null;}
           if(!row){if(++attempts>5){this.onStatus('pending');return;}const remote=await this.load();if(!this.rebase(remote))return;continue;}
