@@ -46,4 +46,6 @@ do $$declare p record;begin for p in select policyname from pg_policies where sc
 create policy ciclo_own_select on public.ciclo_study_state for select to authenticated using(user_id=(select auth.uid()) and exists(select 1 from public.platform_access p where p.user_id=(select auth.uid()) and p.active));
 create policy ciclo_own_insert on public.ciclo_study_state for insert to authenticated with check(user_id=(select auth.uid()) and exists(select 1 from public.platform_access p where p.user_id=(select auth.uid()) and p.active));
 create policy ciclo_own_update on public.ciclo_study_state for update to authenticated using(user_id=(select auth.uid()) and exists(select 1 from public.platform_access p where p.user_id=(select auth.uid()) and p.active)) with check(user_id=(select auth.uid()) and exists(select 1 from public.platform_access p where p.user_id=(select auth.uid()) and p.active));
+create policy platform_audit_admin_read on public.platform_access_audit for select to authenticated using(exists(select 1 from public.platform_access p where p.user_id=(select auth.uid()) and p.role='admin' and p.active));
+grant select on public.platform_access_audit to authenticated;
 commit;

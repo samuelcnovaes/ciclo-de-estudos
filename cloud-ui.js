@@ -23,11 +23,12 @@ window.CicloCloud={
   client.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY'){cloud.recovery=true;setTimeout(()=>document.getElementById('cloudButton')?.click(),100);}if(event==='SIGNED_OUT'&&cloud.user){location.reload();}});
   if(error){cloud.error=error;return cloud;}
   if(!cloud.user)return cloud;
+  if(window.PlatformCycleAccess){try{const access=await PlatformCycleAccess.check(client,cloud.user);cloud.platformRole=access.role;if(!access.allowed){cloud.deniedUser=cloud.user;cloud.user=null;cloud.notice=access.message;return cloud}}catch(error){cloud.error=error;cloud.fatal=true;return cloud}}
   cloud.mode='cloud';cloud.key='ciclo-estudos-v1:cloud:'+cloud.user.id;
   const metaKey=cloud.key+':sync';let meta=null;
   try{meta=JSON.parse(localStorage.getItem(metaKey));if(meta?.base)meta.base=cloudHydrateState(meta.base);if(meta?.pending?.payload){meta.pending.payload=cloudHydrateState(meta.pending.payload);meta.pending.text=JSON.stringify(meta.pending.payload);if(meta.baselinePatch)meta.base=CicloSupabase.SnapshotSync.applyPatch(meta.pending.payload,meta.baselinePatch);}}catch{}
   const shape=p=>{if(!p||!Array.isArray(p.subjects)||!Array.isArray(p.stages)||!Array.isArray(p.history))throw new Error('Dados da nuvem incompatíveis. Exporte uma cópia antes de substituir.');};
-  const load=async()=>{const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
+  const load=async()=>{if(window.PlatformCycleAccess){const access=await PlatformCycleAccess.check(client,cloud.user);if(!access.allowed){PlatformCycleAccess.block(client,access.message);throw Error(access.message)}}const {data,error}=await client.from('ciclo_study_state').select('payload,version').eq('user_id',cloud.user.id).maybeSingle();if(error)throw error;return data;};
   cloud.sync=new CicloSupabase.SnapshotSync({load,validate:shape,write:async(payload,version)=>{
    let q=client.from('ciclo_study_state');
    q=version===null?q.insert({user_id:cloud.user.id,payload}):q.update({payload}).eq('user_id',cloud.user.id).eq('version',version);
@@ -61,6 +62,7 @@ window.CicloCloud={
   cloud.renderStatus=()=>{const differences=(cloud.sync?.pending?.payload||cloud.sync?.base)?.syncRecovery?.length||0;if(differences&&!cloud.notice)cloud.notice=differences+' diferenças simultâneas estão preservadas para recuperação.';$('cloudStatus').setAttribute('aria-live','polite');$('cloudStatus').title=cloud.status==='saved'?'Dados confirmados no Supabase'+(cloud.savedAt?' às '+cloud.savedAt.toLocaleTimeString('pt-BR'):''):cloud.sync?.pending?'Há alterações que ainda não foram confirmadas pelo Supabase. Mantenha esta página aberta até sincronizar.':'';const offline=typeof navigator!=='undefined'&&navigator.onLine===false;$('cloudStatus').textContent=offline?(cloud.sync?.pending?'Sem conexão — alterações aguardando envio':'Sem conexão'):(label[cloud.status||cloud.mode]||label.local);$('cloudStatus').dataset.status=offline?'offline':cloud.status||cloud.mode;$('cloudIdentity').textContent=cloud.user?cloud.user.email:'Entre para acessar os mesmos estudos em outro dispositivo.';$('cloudConnected').hidden=!cloud.user;$('cloudLoginForm').hidden=!!cloud.user;$('cloudMessage').textContent=cloud.error?cloudErrorText(cloud.error):(cloud.notice||'');$('cloudRecovery').hidden=!cloud.recovery;};
   window.addEventListener('online',()=>cloud.renderStatus());window.addEventListener('offline',()=>cloud.renderStatus());
   cloud.renderStatus();
+  if(cloud.user&&window.PlatformAdmin)PlatformAdmin.attach(cloud.client,document.querySelector('.side-menu .tabs')).catch(()=>{});
   if(cloud.account.standalone)$('cloudMigrate').hidden=true;
   $('cloudButton').onclick=()=>{$('cloudError').hidden=true;cloud.renderStatus();$('cloudDialog').showModal();};
   const err=e=>{$('cloudError').textContent=cloudErrorText(e);$('cloudError').hidden=false;};

@@ -1,8 +1,8 @@
-# Administração unificada — preparada, ainda não ativada
+# Administração unificada — ativada
 
-A ativação persistente foi bloqueada pela revisão automática por alterar as políticas de acesso do Planejamento em produção. Nenhuma alteração deste esquema foi aplicada. A execução integral em uma transação com ROLLBACK passou: contas existentes preservadas, novos cadastros comuns, proteção do último administrador, revogação de leitura/gravação e isolamento dos estudos.
+Ativada em 18/10/2026 após autorização explícita do proprietário. Contas existentes foram preservadas. A execução integral em uma transação com ROLLBACK passou: contas existentes preservadas, novos cadastros comuns, proteção do último administrador, revogação de leitura/gravação e isolamento dos estudos.
 
-Após autorização explícita de ativação:
+Componentes da ativação:
 
 1. Aplicar `platform-access-schema.sql` atomicamente. A carga inicial mantém todas as contas atuais ativas no Planejamento e preserva como administradores os administradores existentes do Desempenho. Contas novas recebem acesso comum ao Planejamento; o Desempenho continua dependendo de autorização.
 2. Implantar `functions/platform-create-user` com `verify_jwt = true`. A função confirma a sessão com `getUser`, consulta o papel no banco e só então usa a credencial de servidor para criar a conta. Nome, e-mail e senha inicial são exigidos. Nenhuma senha é retornada ou registrada em auditoria. Nenhum convite é enviado. A conta criada fica pronta para entrar com a senha inicial informada pelo administrador.

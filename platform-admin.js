@@ -1,6 +1,6 @@
-/* Prepared shared administration panel. Enable only after platform-access-schema.sql is activated. */
+/* Shared administration panel; all operations require server authorization. */
 window.PlatformAdmin={async attach(client,container){
- const {data}=await client.auth.getUser();if(!data?.user)return;
+ if(!container||container.querySelector('.platform-admin-entry'))return;const {data}=await client.auth.getUser();if(!data?.user)return;
  const permission=await client.from('platform_access').select('role,active').eq('user_id',data.user.id).maybeSingle();if(permission.error||permission.data?.role!=='admin'||!permission.data.active)return;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const entry=document.createElement('button');entry.type='button';entry.textContent='⚙ Administração de usuários';entry.className='platform-admin-entry';container.append(entry);
