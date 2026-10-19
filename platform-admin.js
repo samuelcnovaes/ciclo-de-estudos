@@ -3,7 +3,7 @@ window.PlatformAdmin={async attach(client,container){
  if(!container||container.querySelector('.platform-admin-entry'))return;const {data}=await client.auth.getUser();if(!data?.user)return;
  const permission=await client.from('platform_access').select('role,active').eq('user_id',data.user.id).maybeSingle();if(permission.error||permission.data?.role!=='admin'||!permission.data.active)return;
  const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- const entry=document.createElement('button');entry.type='button';entry.textContent='⚙ Administração de usuários';entry.className='platform-admin-entry';container.append(entry);
+ const entry=document.createElement('button');entry.type='button';entry.innerHTML='<span class="nav-icon navicon" aria-hidden="true">⚙</span><span class="nav-label">Administração de usuários</span>';entry.setAttribute('aria-label','Administração de usuários');entry.title='Administração de usuários';entry.className='platform-admin-entry';container.append(entry);
  const viewerEmail=data.user.email;let snapshot={accounts:[],audit:[]},busy=false,dialog;
  const showMessage=(message,error=false)=>{const el=dialog.querySelector('#paMessage');el.textContent=message;el.dataset.error=String(error)};
  async function load(){const {data,error}=await client.rpc('platform_manage_access',{request_action:'list',target_email:null,target_app:'cycle'});if(error)throw error;snapshot=data;renderList()}
