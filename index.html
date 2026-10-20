@@ -988,6 +988,16 @@ const renderBeforeHeaderStageEdit=render;render=function(){renderBeforeHeaderSta
 
 // Keep the save action outside each register's scroll area.
 for(const formId of ['taskForm','recordForm']){const form=$(formId),footer=form.querySelector('.record-save-footer'),body=document.createElement('div');body.className='study-register-body';while(form.firstChild&&form.firstChild!==footer)body.append(form.firstChild);form.prepend(body);}
+// Share a compact field order while preserving every existing control and handler.
+for(const kind of ['record','task']){
+ const grid=document.querySelector(kind==='record'?'.record-main-grid':'.task-main-grid');
+ const ids=kind==='record'?['category','recordSubject','recordTime','recordActivityChoice','topic','material']:['taskCategory','taskMatter','taskTime','taskActivity','taskTopic','taskMaterial','taskUnits'];
+ grid.classList.add('compact-register-grid');
+ ids.forEach((id,index)=>{const field=$(id)?.closest('.compact-register-grid>div');if(field){field.classList.add('register-position-'+index);grid.append(field);}});
+ const metrics=document.createElement('div');metrics.className='compact-register-metrics';
+ const boxes=(kind==='record'?['recordQuestionsBox','recordPagesBox','recordVideosBox','recordCardsBox']:['taskQuestions','taskPagesBox','taskVideosBox']).map($).filter(Boolean);
+ if(boxes.length){if(kind==='record')boxes[0].parentElement.before(metrics);else boxes[0].before(metrics);for(const box of boxes)metrics.append(box);}
+}
 // Additional study controls share the active account and proof snapshot.
 function isNewContentActivity(value){return ['conteudo novo','teoria','videoaula'].includes(cycleActivityKey(value));}
 function limitNewTopicWindow(stages){const bySubject=new Map();for(const st of stages){if(!st.curriculum)continue;const groups=bySubject.get(st.subjectId)||new Map();bySubject.set(st.subjectId,groups);const id=st.curriculum.topicId;if(!groups.has(id))groups.set(id,[]);groups.get(id).push(st)}for(const groups of bySubject.values()){const topics=[...groups.values()].filter(g=>g.some(s=>s.curriculum.phase==='theory'));for(let i=2;i<topics.length;i++){const earlier=topics[i-2],practice=earlier.find(s=>s.curriculum.phase==='questions')||earlier.find(s=>s.curriculum.phase==='review'),first=topics[i].find(s=>s.curriculum.phase==='theory'&&!s.curriculum.after);if(practice&&first){first.curriculum.after=practice.curriculum.key;first.curriculum.delayDays=0;}}}}
@@ -1126,4 +1136,38 @@ if(state.session){state.session.running=false;state.session.last=Date.now();$('w
  body[data-theme] #dock .dock-time-controls #dockToggle{min-width:88px;padding:10px 7px;font-size:13px}
  body[data-theme] #dock>.actions #dockCancel{top:10px;right:10px}
 }
-</style></body></html>
+</style>
+<style id="compact-study-register">
+:is(#recordDialog,#taskDialog)[open]{box-sizing:border-box;width:min(760px,calc(100vw - 16px));max-height:calc(100dvh - 16px);border-radius:14px}
+:is(#recordDialog,#taskDialog)>form{flex:1 1 auto;min-height:0;max-height:calc(100dvh - 76px)}
+:is(#recordDialog,#taskDialog) .study-register-body{flex:1 1 auto;min-height:0;overflow:auto;padding:0 14px 8px;scrollbar-gutter:auto}
+:is(#recordDialog,#taskDialog)>.dialog-head{padding:10px 14px}
+:is(#recordDialog,#taskDialog) .dialog-head h2{font-size:17px;margin:0}
+:is(#recordDialog,#taskDialog) label{margin:5px 0 3px;font-size:12px}
+:is(#recordDialog,#taskDialog) input:not([type=checkbox]),:is(#recordDialog,#taskDialog) select{box-sizing:border-box;min-width:0;max-width:100%;padding:6px 8px;font-size:13px;min-height:32px}
+:is(#recordDialog,#taskDialog) .form-row,#taskDialog .task-main-grid{gap:0 10px}
+:is(#recordDialog,#taskDialog) .form-row>div,#taskDialog .task-main-grid>div{min-width:0}
+:is(#recordDialog,#taskDialog) .metrics-box{padding:7px 9px;margin-top:7px}
+:is(#recordDialog,#taskDialog) .schedule-review-highlight{padding:7px 9px;margin:7px 0 4px}
+:is(#recordDialog,#taskDialog) .record-day-picker{margin:6px 0 4px}
+:is(#recordDialog,#taskDialog) .record-intro,#taskDialog .task-context{margin:6px 0;padding:6px 9px}
+:is(#recordDialog,#taskDialog) textarea{box-sizing:border-box;min-height:38px;height:38px;padding:6px 8px}
+:is(#recordDialog,#taskDialog) .record-save-footer{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px;padding:8px 14px;padding-bottom:max(8px,env(safe-area-inset-bottom));background:var(--paper);z-index:5}
+:is(#recordDialog,#taskDialog) .record-save-footer button{min-height:38px;margin:0;font-size:12px;padding:8px 12px}
+:is(#recordDialog,#taskDialog) .record-save-footer .primary{min-height:38px;margin-left:auto;font-weight:750}
+:is(#recordDialog,#taskDialog) .record-save-hint{display:none}
+@media(max-width:480px){:is(#recordDialog,#taskDialog)[open]{width:calc(100vw - 8px);max-height:calc(100dvh - 8px)}:is(#recordDialog,#taskDialog) .study-register-body{padding-inline:10px}:is(#recordDialog,#taskDialog) .record-save-footer{padding-inline:10px}:is(#recordDialog,#taskDialog) input:not([type=checkbox]),:is(#recordDialog,#taskDialog) select{font-size:16px}:is(#recordDialog,#taskDialog) .record-save-footer .primary{flex:1 1 auto}}
+
+:is(#recordDialog,#taskDialog) .compact-register-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:0 10px}
+:is(#recordDialog,#taskDialog) .compact-register-grid>div{grid-column:auto}
+:is(#recordDialog,#taskDialog) .compact-register-grid>.register-position-3{grid-column:1/-1}
+:is(#recordDialog,#taskDialog) .compact-register-grid>.register-position-4{grid-column:1/3}
+:is(#recordDialog,#taskDialog) .compact-register-metrics{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,2fr);gap:10px;align-items:start}
+:is(#recordDialog,#taskDialog) .compact-register-metrics>div{min-width:0}
+:is(#recordDialog,#taskDialog) .compact-register-metrics .form-row{display:flex;gap:6px;flex-wrap:wrap}
+:is(#recordDialog,#taskDialog) .compact-register-metrics .form-row>div{flex:1 1 55px;min-width:0}
+:is(#recordDialog,#taskDialog) .compact-register-metrics button{font-size:11px;padding:5px 7px}
+:is(#recordDialog,#taskDialog) .compact-register-metrics .question-entry-head{margin-bottom:4px}
+@media(max-width:600px){:is(#recordDialog,#taskDialog) .compact-register-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#recordDialog,#taskDialog) .compact-register-grid>.register-position-1,:is(#recordDialog,#taskDialog) .compact-register-grid>.register-position-3,:is(#recordDialog,#taskDialog) .compact-register-grid>.register-position-4{grid-column:1/-1}:is(#recordDialog,#taskDialog) .compact-register-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}:is(#recordDialog,#taskDialog) .compact-register-metrics>div:nth-child(3){grid-column:1/-1}}
+</style>
+</body></html>
