@@ -236,3 +236,13 @@ test('home all review topics groups subjects and preserves topic actions',async(
  groups[0].querySelector('[data-performance-review]').click();assert.equal(doc.getElementById('manualReviewSubject').value,'a');assert.equal(doc.getElementById('manualReviewContent').value,'Normas > Evidência');doc.getElementById('manualReviewDialog').close();
  doc.querySelector('.home-suggestions-panel [data-statistics-all]').click();doc.querySelectorAll('.home-review-subject-group')[1].querySelector('[data-statistics-add]').click();const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:grouped-home-reviews'));assert.equal(saved.stages[0].subjectId,'b');assert.equal(saved.stages[0].topic,'Gramática > Verbos');w.close();
 });
+
+test('replanning preserves priority question stages and their progress independently of normal stages',async()=>{
+ for(const mode of ['time','task'])for(const keep of [true,false]){
+  const user='retain-priority-'+mode+'-'+keep,d=await boot({id:user}),w=d.window,p=w.plannerTest,$=id=>w.document.getElementById(id),data=()=>JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+user));
+  p.set({subjects:[{id:'a',name:'Direito',color:'#315fb3',contents:['Conteúdo novo','Questões']}],stages:[]});w.document.querySelector('[data-tab="cycle"]').click();$('newPlanning').click();w.document.querySelector('[data-pw-path="detail"]').click();if(mode==='task')w.document.querySelector('[data-pw-measurement="task"]').click();for(let i=0;i<6;i++)$('pwNext').click();
+  const saved=data(),priority={id:'priority-questions',subjectId:'a',content:'Questões',mode:'task',unit:'questões',target:10,done:3,topic:'Tributos',transientRoundId:saved.roundId,curriculum:{key:'report-review:test',phase:'questions',topicName:'Tributos',topicId:null,after:null,delayDays:0},performanceSource:{rate:30,total:10,correct:3}};
+  p.set({subjects:saved.subjects,stages:[priority,...saved.stages]});p.save();w.document.querySelector('[data-tab="cycle"]').click();$('replanPlanning').click();for(let i=0;i<5;i++)$('pwNext').click();assert.ok($('pwKeepProgress'));$('pwKeepProgress').checked=keep;$('pwNext').click();
+  const next=data(),retained=next.stages.filter(s=>s.transientRoundId);assert.equal(retained.length,1);assert.deepEqual(retained[0],{...priority,transientRoundId:next.roundId});assert.equal(next.stages.filter(s=>!s.transientRoundId).reduce((n,s)=>n+s.done,0),0);assert.equal(next.activePlanningId,saved.activePlanningId);assert.match(w.document.getElementById('content').textContent,/Tributos/);w.close();
+ }
+});
