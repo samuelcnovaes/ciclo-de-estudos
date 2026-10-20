@@ -1243,4 +1243,53 @@ if(state.session){state.session.running=false;state.session.last=Date.now();$('w
 .home-dashboard .home-review-entry{font-size:14px}
 @media(max-width:760px){.home-dashboard .home-balanced-grid,.home-dashboard .home-overview{grid-template-columns:minmax(0,1fr)}}
 .home-review-subject-group{margin:14px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}.home-review-subject-group>summary{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;background:var(--surface-soft);font-size:16px}.home-review-subject-group>summary::before{content:'▸'}.home-review-subject-group[open]>summary::before{content:'▾'}.home-review-subject-group>summary>span{margin-left:auto;color:var(--muted);font-size:13px}.home-review-subject-group>div{padding:14px 14px 4px}
-</style></body></html>
+</style>
+<style id="reference-study-register">
+/* Reference layout; existing field visibility and form handlers remain in control. */
+#recordDialog.polished-study-register,#taskDialog.polished-study-register{width:min(800px,calc(100vw - 24px));border-radius:21px;background:var(--paper);box-shadow:0 24px 70px #10233830}
+#recordDialog>.dialog-head,#taskDialog>.dialog-head{padding:23px 24px 13px;border:0;background:var(--paper);align-items:flex-start}
+.polished-study-register .study-register-heading .eyebrow{display:none}
+#recordDialog .study-register-heading h2,#taskDialog .study-register-heading h2{font-size:18px;letter-spacing:0;margin:0 0 5px;font-weight:650}
+.polished-study-register .study-register-heading>small{font-size:13px;line-height:1.5}
+#recordDialog>.dialog-head>button,#taskDialog>.dialog-head>button{border:0;border-radius:8px;background:transparent;width:25px;height:25px}
+#recordDialog .study-register-body,#taskDialog .study-register-body{box-sizing:border-box;padding:3px 24px 16px;scrollbar-gutter:auto}
+#recordDialog label,#taskDialog label{font-size:13px;font-weight:500;margin:8px 0 7px;color:var(--muted)}
+#recordDialog input:not([type=checkbox]),#recordDialog select,#taskDialog input:not([type=checkbox]),#taskDialog select{min-height:42px;border-radius:11px;font-size:14px;padding:10px 12px;background:var(--paper);box-shadow:none}
+#recordDialog input[readonly],#taskDialog input[readonly]{background:var(--surface-soft)}
+#recordDialog .record-day-picker,#taskDialog .record-day-picker{margin:0 0 10px;border:0;border-radius:11px;gap:3px;padding:4px;background:var(--surface-soft)}
+#recordDialog .record-day-picker button,#taskDialog .record-day-picker button{min-width:78px;padding:8px 14px;font-size:13px;border-radius:8px}
+#recordDialog .compact-register-grid,#taskDialog .compact-register-grid{gap:3px 10px;margin:0 0 9px}
+#recordDialog .compact-register-grid>.register-position-1,#taskDialog .compact-register-grid>.register-position-1{grid-column:span 6}
+#recordDialog .compact-register-grid>.register-position-2,#taskDialog .compact-register-grid>.register-position-2{grid-column:span 3}
+#recordDialog .compact-register-grid>.register-position-4,#taskDialog .compact-register-grid>.register-position-4{grid-column:1/9}
+#recordDialog .compact-register-grid>.register-position-5,#taskDialog .compact-register-grid>.register-position-5{grid-column:9/-1}
+#recordDialog .manual-duration input,#taskDialog .manual-duration input{padding:9px 4px;min-height:38px}
+#recordDialog .manual-duration label,#taskDialog .manual-duration label{font-size:10px;margin:0}
+#recordDialog .schedule-review-highlight,#taskDialog .schedule-review-highlight{margin:5px 0 8px;padding:3px 0}
+#recordDialog .schedule-review-highlight strong,#taskDialog .schedule-review-highlight strong{font-size:13px;font-weight:500;color:var(--ink)}
+#recordDialog fieldset.metrics-box,#taskDialog fieldset.metrics-box{border:0;padding:0;margin:4px 0 10px;background:transparent}
+#recordDialog fieldset.metrics-box legend,#taskDialog fieldset.metrics-box legend{font-size:11px;padding:0;margin-bottom:3px}
+#recordDialog .compact-register-metrics,#taskDialog .compact-register-metrics{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;margin:0 0 8px}
+#recordDialog .compact-register-metrics>.metrics-box,#taskDialog .compact-register-metrics>.metrics-box{flex:1 1 160px;box-sizing:border-box;padding:12px;margin:0;border-radius:12px;border:1px solid color-mix(in srgb,var(--green) 28%,var(--line));box-shadow:none;background:var(--paper)}
+#recordDialog #recordVideosBox,#taskDialog #taskVideosBox{flex:2 1 280px}
+#recordDialog .compact-register-metrics strong,#taskDialog .compact-register-metrics strong{font-size:13px;font-weight:550;color:var(--muted)}
+#recordDialog .compact-register-metrics label,#taskDialog .compact-register-metrics label{font-size:11px;margin:5px 0 4px}
+#recordDialog .compact-register-metrics input,#taskDialog .compact-register-metrics input{min-height:38px;padding:8px;font-size:13px}
+#recordDialog .compact-register-metrics .form-row,#taskDialog .compact-register-metrics .form-row{gap:8px}
+#recordDialog textarea,#taskDialog textarea{height:74px;min-height:58px;border-radius:12px;padding:12px 14px;font-size:14px;background:var(--paper)}
+#recordDialog .record-save-footer,#taskDialog .record-save-footer{padding:15px 24px;border-top:1px solid var(--line);background:var(--paper);box-shadow:none;gap:12px}
+#recordDialog .record-save-footer button,#taskDialog .record-save-footer button{min-height:38px;border-radius:8px;font-size:13px;padding:9px 16px}
+#recordDialog .record-save-footer .primary,#taskDialog .record-save-footer .primary{margin-left:0;box-shadow:none}
+#recordDialog .record-save-footer>:first-child:not(.record-save-hint),#taskDialog .record-save-footer>:first-child:not(.record-save-hint){margin-left:auto}
+#recordDialog .record-save-footer button:not(.primary),#taskDialog .record-save-footer button:not(.primary){margin-left:auto}
+@media(max-width:600px){
+ #recordDialog>.dialog-head,#taskDialog>.dialog-head{padding:17px 16px 10px}
+ #recordDialog .study-register-body,#taskDialog .study-register-body{padding:3px 16px 14px}
+ #recordDialog .compact-register-grid,#taskDialog .compact-register-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #recordDialog input:not([type=checkbox]),#recordDialog select,#taskDialog input:not([type=checkbox]),#taskDialog select{font-size:16px}
+ #recordDialog .compact-register-metrics>.metrics-box,#taskDialog .compact-register-metrics>.metrics-box{flex-basis:100%}
+ #recordDialog .record-save-footer,#taskDialog .record-save-footer{padding:12px 16px;gap:8px}
+ #recordDialog .record-save-footer .primary,#taskDialog .record-save-footer .primary{flex:1}
+}
+</style>
+</body></html>
