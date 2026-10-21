@@ -24,3 +24,7 @@ Não desinstale o script nem limpe seus dados antes de salvar sessões pendentes
 ## Validação
 
 Testes automatizados cobrem agrupamento, arredondamento de tempo, importação, seleção de etapas, contexto da conta, proteção contra duplicação e transporte entre duas abas simuladas. O fluxo completo ainda precisa ser conferido no TEC autenticado com Tampermonkey instalado; mudanças no HTML do TEC podem afetar a detecção original de respostas.
+
+## Conexão — versão 2.0.1
+
+A comunicação com o Planejamento usa eventos do documento para funcionar também quando o navegador isola as mensagens do Tampermonkey. O botão TEC no Planejamento mostra se o script foi detectado. Se não houver conexão, confirme que a versão 2.0.1 está habilitada para TEC e Planejamento na mesma instalação do Tampermonkey, recarregue as duas abas e ative a integração no Planejamento.
