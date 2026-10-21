@@ -1111,7 +1111,20 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshPla
 const updateBeforeQuietQuestionGoals=updateTimer;updateTimer=function(){updateBeforeQuietQuestionGoals();if(state.session&&$('studyReminder').open)$('studyReminder').close();const panel=document.querySelector('.question-goal-pace');if(panel&&panel.dataset.timerSuppressed!==String(!!state.session))panel.outerHTML=questionGoalPaceMarkup();};
 const tecPlannerBridge=CicloTecPlanner.install({accountId:cloud.user.id,getState:()=>state,setState:value=>{state=value},uid,esc,settle,sessionStage,stageName,isTask,activityKey:cycleActivityKey,persist:()=>persist(),render:()=>render(),updateTimer:()=>updateTimer(),rememberTopic:rememberSubjectTopic,applyRecord:(...args)=>applyRecord(...args),time,toast});
 let lastTecPublish=0;const updateBeforeTecPublish=updateTimer;updateTimer=function(){updateBeforeTecPublish();if(Date.now()-lastTecPublish>=1000){lastTecPublish=Date.now();tecPlannerBridge.publish();}};
-const openRecordBeforeTec=openRecord;openRecord=function(){if(state.session?.tec){try{tecPlannerBridge.review()}catch(error){toast(error.message)}return;}return openRecordBeforeTec(...arguments);};$('focusSave').onclick=$('dockSave').onclick=openRecord;
+// Saving from the planner always uses its own timer and editable study form.
+// The TEC button still opens the separate review of detected questions.
+const openRecordBeforeTec=openRecord;openRecord=function(){return openRecordBeforeTec(...arguments);};$('focusSave').onclick=$('dockSave').onclick=openRecord;
+function savePlannerSessionWithTec(save,receiver,args){
+ const linked=state.session?.tec,previousCount=state.history.length;
+ const result=save.apply(receiver,args);
+ if(linked&&!state.session&&state.history.length>previousCount){
+  state.ui??={};state.ui.tecImportedSessions=[...(state.ui.tecImportedSessions||[]),{id:linked.id,accountId:cloud.user.id,examId:state.activeExamId||'',planningId:state.activePlanningId||'',at:new Date().toISOString()}].slice(-500);
+  persist();tecPlannerBridge.publish();
+ }
+ return result;
+}
+const saveRecordBeforeTec=$('recordForm').onsubmit;$('recordForm').onsubmit=function(...args){return savePlannerSessionWithTec(saveRecordBeforeTec,this,args);};
+const saveTaskBeforeTec=saveTaskProgress;saveTaskProgress=function(...args){return savePlannerSessionWithTec(saveTaskBeforeTec,this,args);};
 $('accountEmail').textContent=cloud.user?cloud.user.email:ACCOUNT.email;
 CicloCloud.attach(cloud,{receive:payload=>{const beforeSession=state.session,active=state.activeExamId;const next=validateBackup({format:'ciclo-estudos-backup',version:1,data:payload,exportedAt:new Date().toISOString()});if(beforeSession&&next.activeExamId===active){next.session=beforeSession;if(!next.stages.some(s=>s.id===beforeSession.stageId)&&!beforeSession.inlineStage){const stage=state.stages.find(s=>s.id===beforeSession.stageId);if(stage)next.session.inlineStage=structuredClone(stage);}}state=next;applySidebar();applyTheme();if(!document.querySelector('dialog[open]'))render();else updateTimer();return state;},export:()=>exportBackup(),validate:payload=>validateBackup({format:'ciclo-estudos-backup',version:1,data:payload,exportedAt:new Date().toISOString()}),replace:payload=>{if(state.session?.running)throw new Error('Salve ou cancele o cronômetro antes de transferir os dados.');state=payload;applySidebar();applyTheme();migrateReviews();state.reviewAlerts??={enabled:true,lastDay:null,snoozeUntil:0};state.subjects.forEach(m=>m.contents=[...new Set([...(m.contents||[]),'Videoaula'])]);state.videoDefaultVersion=1;state.planner??={view:'week',anchor:dayKey(new Date()),startDate:dayKey(new Date()),startTime:'08:00',weekdays:[0,1,2,3,4,5,6]};persist();render();}});
 
