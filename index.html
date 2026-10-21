@@ -1318,4 +1318,24 @@ body[data-theme] #dock{box-sizing:border-box;left:50%!important;right:auto!impor
 body:has(#dock:not([hidden])) #quickClock{bottom:calc(150px + env(safe-area-inset-bottom))}
 body:has(#dock:not([hidden])) #quickNotes{bottom:calc(222px + env(safe-area-inset-bottom))}
 @media(max-width:700px){#quickClock,#quickNotes{right:16px}body:has(#dock:not([hidden])) #quickNotes{bottom:calc(248px + env(safe-area-inset-bottom))}}
-</style></body></html>
+</style><style id="study-register-field-alignment">
+/* Named areas replace legacy placements based on the fields' DOM order. */
+#recordDialog .record-main-grid.compact-register-grid,#taskDialog .task-main-grid.compact-register-grid{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);grid-template-areas:"category subject duration" "activity activity activity" "topic topic material";gap:8px 12px;align-items:start}
+#taskDialog .task-main-grid.compact-register-grid{grid-template-areas:"category subject duration" "activity activity quantity" "topic topic material"}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-0,#taskDialog .task-main-grid.compact-register-grid>.register-position-0{grid-area:category!important}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-1,#taskDialog .task-main-grid.compact-register-grid>.register-position-1{grid-area:subject!important}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-2,#taskDialog .task-main-grid.compact-register-grid>.register-position-2{grid-area:duration!important}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-3,#taskDialog .task-main-grid.compact-register-grid>.register-position-3{grid-area:activity!important}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-4,#taskDialog .task-main-grid.compact-register-grid>.register-position-4{grid-area:topic!important}
+#recordDialog .record-main-grid.compact-register-grid>.register-position-5,#taskDialog .task-main-grid.compact-register-grid>.register-position-5{grid-area:material!important}
+#taskDialog .task-main-grid.compact-register-grid>.register-position-6{grid-area:quantity!important}
+#recordDialog .compact-register-grid .study-register-field,#taskDialog .compact-register-grid .study-register-field{min-width:0;width:100%;margin:0}
+#recordDialog .compact-register-grid .record-field-title,#taskDialog .compact-register-grid .record-field-title{min-width:0;line-height:1.4;flex-wrap:nowrap}
+#recordDialog .compact-register-grid .record-field-title strong,#taskDialog .compact-register-grid .record-field-title strong{font-size:13px;font-weight:550;overflow-wrap:anywhere}
+#recordDialog .compact-register-grid .record-field-title svg,#taskDialog .compact-register-grid .record-field-title svg{flex:0 0 15px}
+@media(max-width:600px){
+ #recordDialog .record-main-grid.compact-register-grid,#taskDialog .task-main-grid.compact-register-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"category subject" "duration duration" "activity activity" "topic topic" "material material"}
+ #taskDialog .task-main-grid.compact-register-grid{grid-template-areas:"category subject" "duration duration" "activity activity" "quantity quantity" "topic topic" "material material"}
+}
+</style>
+</body></html>
