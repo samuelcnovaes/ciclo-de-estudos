@@ -28,3 +28,7 @@ Testes automatizados cobrem agrupamento, arredondamento de tempo, importação, 
 ## Conexão — versão 2.0.1
 
 A comunicação com o Planejamento usa eventos do documento para funcionar também quando o navegador isola as mensagens do Tampermonkey. O botão TEC no Planejamento mostra se o script foi detectado. Se não houver conexão, confirme que a versão 2.0.1 está habilitada para TEC e Planejamento na mesma instalação do Tampermonkey, recarregue as duas abas e ative a integração no Planejamento.
+
+## Cancelar cronômetro — versão 2.0.2
+
+No painel TEC + Planejamento, use **Cancelar cronômetro** e confirme para descartar a sessão sem gravar registros. O cronômetro do Planejamento é encerrado e as contagens originais de questões do gadget são mantidas. A conexão precisa estar ativa e no contexto da sessão para confirmar o cancelamento.
