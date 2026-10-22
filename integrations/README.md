@@ -32,3 +32,9 @@ A comunicação com o Planejamento usa eventos do documento para funcionar tamb�
 ## Cancelar cronômetro — versão 2.0.2
 
 No painel TEC + Planejamento, use **Cancelar cronômetro** e confirme para descartar a sessão sem gravar registros. O cronômetro do Planejamento é encerrado e as contagens originais de questões do gadget são mantidas. A conexão precisa estar ativa e no contexto da sessão para confirmar o cancelamento.
+
+## Ajustes e reconexão — versão 2.0.3
+
+Arraste o cabeçalho **TEC + Planejamento** para posicionar o painel onde preferir. Em **Ajustar painel**, altere a largura ou restaure a posição inicial. O botão **−** recolhe os controles e mantém o tempo visível. Posição, largura e recolhimento são lembrados; o painel permanece dentro da tela ao redimensionar a janela. Também é possível focar o cabeçalho e usar as setas do teclado.
+
+A conexão procura automaticamente uma aba disponível, tenta novamente durante o carregamento e verifica pedidos que não receberam a notificação entre abas. Uma aba fechada ou sem resposta deixa de bloquear a comunicação. **Conectar ao Planejamento** aproveita uma conexão existente, evitando recarregar a página já conectada. Após atualizar o script no Tampermonkey, recarregue TEC e Planejamento uma vez e mantenha a integração ativada no botão TEC.

@@ -24,3 +24,28 @@ test('DOM transport connects without window messages across an isolated userscri
  root.getElementById('start').click();await pause();assert.ok(state.session);for(const tick of intervals.get(w))await tick();await pause();tec.window.confirm=()=>false;root.getElementById('cancel').click();await pause();assert.ok(state.session);tec.window.confirm=()=>true;root.getElementById('cancel').click();await pause();assert.equal(state.session,null);assert.equal(values.has('mq1:planner:session'),false);assert.equal(state.history.length,2);assert.equal(values.has('mq1:event:q1'),true);
  }finally{planner.window.close();tec.window.close();}
 });
+
+test('panel position width and collapsed clock persist and stay inside the viewport',()=>{
+ const values=new Map(),make=()=>{const d=new JSDOM('',{url:'https://www.tecconcursos.com.br/questoes',runScripts:'outside-only'}),w=d.window;w.GM_getValue=(k,f)=>values.has(k)?values.get(k):f;w.GM_setValue=(k,v)=>values.set(k,v);w.GM_deleteValue=k=>values.delete(k);w.GM_listValues=()=>[...values.keys()];w.GM_addValueChangeListener=()=>1;w.setInterval=()=>0;w.eval(script);return d;};
+ const d=make(),w=d.window,host=w.document.querySelector('#tec-planner-widget'),root=host.shadowRoot,head=root.querySelector('.head');
+ try{head.dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));assert.equal(host.style.left,'10px');const range=root.getElementById('panelWidth');range.value='260';range.dispatchEvent(new w.Event('input'));assert.equal(root.querySelector('.box').style.width,'260px');root.getElementById('collapse').click();assert.equal(root.getElementById('miniClock').textContent,'00:00:00');assert.ok(root.querySelector('.box').classList.contains('collapsed'));
+ // Pointer dragging works from the title and clamps an off-screen drop.
+ const pointer=(type,x,y)=>{const e=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(e,{clientX:x,clientY:y,pointerId:1,button:0});head.dispatchEvent(e);};pointer('pointerdown',10,10);pointer('pointermove',-200,-200);pointer('pointerup',-200,-200);assert.equal(host.style.left,'8px');assert.equal(host.style.top,'8px');
+ const next=make();try{const h=next.window.document.querySelector('#tec-planner-widget');assert.equal(h.style.left,'8px');assert.equal(h.shadowRoot.querySelector('.box').style.width,'260px');assert.ok(h.shadowRoot.querySelector('.box').classList.contains('collapsed'));h.shadowRoot.getElementById('resetPosition').click();assert.equal(h.style.bottom,'16px');assert.equal(values.has('mq1:planner:position'),false);}finally{next.window.close();}
+ }finally{w.close();}
+});
+
+test('late planner startup recovers a stale host and missed request notifications without repeated connect clicks',async()=>{
+ const planner=new JSDOM('',{url:'https://samuelcnovaes.github.io/ciclo-de-estudos/',runScripts:'outside-only'}),tec=new JSDOM('',{url:'https://www.tecconcursos.com.br/questoes',runScripts:'outside-only'}),values=new Map(),listeners=[],ticks=new Map();
+ values.set('mq1:planner:host',{id:'closed-tab',until:Date.now()+6000});values.set('mq1:planner:snapshot',{hostId:'closed-tab',enabled:true,at:Date.now()-7000,context:{accountId:'a',examId:'e',planningId:'p'}});
+ for(const d of [planner,tec]){const w=d.window;w.GM_getValue=(k,f)=>values.has(k)?structuredClone(values.get(k)):f;w.GM_setValue=(k,v)=>{values.set(k,structuredClone(v));for(const l of listeners)if(l.k===k&&k!=='mq1:planner:signal')queueMicrotask(()=>l.fn(k,null,v));};w.GM_deleteValue=k=>values.delete(k);w.GM_listValues=()=>[...values.keys()];w.GM_addValueChangeListener=(k,fn)=>listeners.push({k,fn});w.GM_removeValueChangeListener=()=>{};ticks.set(w,[]);w.setInterval=fn=>ticks.get(w).push(fn);}
+ const p=planner.window;let starts=0;
+ try{p.eval(script);tec.window.eval(script);
+ // The native planner listener becomes ready after the first snapshot request.
+ p.document.addEventListener('ciclo-tec-request',event=>{const m=JSON.parse(event.detail);if(m.type==='start')starts++;const data={enabled:true,context:{accountId:'a',examId:'e',planningId:'p'},examName:'Prova',planningName:'Plano',timer:m.type==='start'?{sessionId:'session-new',startedAt:Date.now(),elapsed:0,running:true}:null};p.document.dispatchEvent(new p.CustomEvent('ciclo-tec-response',{detail:JSON.stringify({channel:'ciclo-tec-v1',direction:'response',requestId:m.requestId,ok:true,data})}));});
+ await new Promise(r=>setTimeout(r,1250));for(const fn of ticks.get(p))await fn();await pause();assert.notEqual(values.get('mq1:planner:snapshot').hostId,'closed-tab');
+ const root=tec.window.document.querySelector('#tec-planner-widget').shadowRoot;assert.match(root.getElementById('context').textContent,/Conectado/);let opens=0;tec.window.open=()=>{opens++;return null};root.getElementById('connect').click();assert.equal(opens,0);await pause();
+ root.getElementById('start').click();await pause();assert.equal(starts,0);for(const fn of ticks.get(p))await fn();await pause();assert.equal(starts,1);assert.equal(values.get('mq1:planner:session').id,'session-new');for(const fn of ticks.get(p))await fn();await pause();assert.equal(starts,1);
+ p.dispatchEvent(new p.Event('pagehide'));assert.equal(values.has('mq1:planner:host'),false);assert.equal(values.has('mq1:planner:snapshot'),false);
+ }finally{planner.window.close();tec.window.close();}
+});
