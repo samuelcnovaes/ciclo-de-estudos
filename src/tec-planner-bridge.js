@@ -77,7 +77,7 @@
     if(S().session?.tec)return snapshot();
     if(S().session&&!message.payload?.reuse)throw Error('Já existe um cronômetro. Use “Vincular cronômetro atual” ou finalize-o primeiro.');
     if(!S().session){const id=api.uid();S().session={stageId:id,inlineStage:{id,subjectId:'',content:'Questões',mode:'time',target:1800,done:0,unassigned:true},quick:true,elapsed:0,running:false,last:Date.now(),mode:'elapsed',phase:'work',phaseLeft:S().pom.work*60};}
-    api.settle();S().session.tec={id:api.uid(),startedAt:Date.now(),events:[],planningStageId:S().stages.some(st=>st.id===S().session.stageId)?S().session.stageId:null};S().session.running=true;S().session.last=Date.now();api.persist();api.render();return snapshot();
+    api.settle();S().session.tec={id:api.uid(),startedAt:S().session.studyStartedAt||Date.now(),events:[],planningStageId:S().stages.some(st=>st.id===S().session.stageId)?S().session.stageId:null};S().session.running=true;S().session.last=Date.now();S().session.studyStartedAt??=S().session.tec.startedAt;delete S().session.studyEndedAt;api.persist();api.render();return snapshot();
    }
    if(message.type==='cancel'){
     if(typeof message.sessionId!=='string'||!/^[a-zA-Z0-9-]{1,100}$/.test(message.sessionId))throw Error('Sessão inválida.');
