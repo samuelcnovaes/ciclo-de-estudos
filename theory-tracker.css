@@ -26,3 +26,5 @@
 .theory-subject>summary{min-height:40px;padding-top:9px;padding-bottom:9px}.theory-subject h3{font-size:14px}.theory-course-heading{min-height:38px;padding-top:9px;padding-bottom:9px}.theory-course h4{font-size:13px}.theory-lesson-line{min-height:40px;padding-top:8px;padding-bottom:8px}.theory-lesson-title-cell>strong{font-size:13px}.theory-first-seen,.theory-note-preview{font-size:11px}.theory-inline-progress{font-size:10px}.theory-column-head{font-size:10px;padding-top:8px;padding-bottom:8px}.theory-review-dates span{font-size:10px;padding:3px 5px}.theory-quick-review.theory-quick-review-empty{font-size:10px;padding:4px 6px}.theory-row-actions button{font-size:11px;padding:5px 7px}.theory-tree-line{min-height:34px;padding-top:7px;padding-bottom:7px}.theory-tree-line .theory-topic-name{font-size:12px}.theory-expanded-meta,.theory-subject summary small,.theory-course-heading>small{font-size:11px}
 
 .theory-course-rename{font-size:10px;padding:4px 7px;flex-shrink:0}
+
+.theory-topic-count{flex-shrink:0;white-space:nowrap;font-size:10px;color:var(--muted);padding:2px 5px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
