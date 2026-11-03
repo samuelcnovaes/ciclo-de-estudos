@@ -28,3 +28,21 @@
 .theory-course-rename{font-size:10px;padding:4px 7px;flex-shrink:0}
 
 .theory-topic-count{flex-shrink:0;white-space:nowrap;font-size:10px;color:var(--muted);padding:2px 5px;border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+
+
+/* Readable lesson notes and automatic progress labels. */
+.theory-note-cell{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0;overflow:hidden}
+.theory-note-cell .theory-note-preview{display:block;width:100%;min-width:0;font-size:14px;font-weight:700;line-height:1.5;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theory-note-more{font-size:12px;font-weight:700;padding:3px 7px;line-height:1.4;color:var(--blue,var(--ink))}
+.theory-note-more[hidden]{display:none!important}
+.theory-observation,.theory-note-full{font-size:14px;font-weight:700;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink)}
+.theory-note-dialog{width:min(720px,calc(100vw - 28px));max-height:85dvh;overflow:auto;box-sizing:border-box}
+.theory-note-dialog h3{font-size:14px;margin:16px 0 5px}.theory-note-full{margin:0 0 16px}
+.theory-auto-status{display:inline-flex;flex-shrink:0;align-items:center;font-size:11px;font-weight:700;line-height:1.3;padding:3px 6px;border-radius:6px;background:var(--surface-soft);color:var(--muted)}
+.theory-auto-status.active{background:#fff0d6;color:#925005}.theory-auto-status.completed{background:#def5e7;color:#146936}
+.theory-course-heading{flex-wrap:wrap}.theory-course-heading h4{flex:0 1 auto;min-width:0;overflow-wrap:anywhere}
+.theory-course-state{font-size:21px;line-height:1;flex:0 0 22px;text-align:center}
+.theory-lesson-icon{font-size:19px;flex:0 0 20px;line-height:1}.theory-is-active .theory-lesson-icon{color:#dd8a20}
+.theory-lesson-title-cell{flex-wrap:wrap}.theory-lesson-title-cell>strong{min-width:55px}
+body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd094}body[data-theme=black] .theory-auto-status.completed{background:#173f2b;color:#91e4ae}
+@media(max-width:800px){.theory-note-cell{grid-column:1/-1}.theory-note-cell .theory-note-preview{grid-column:auto}.theory-auto-status{font-size:10px}}

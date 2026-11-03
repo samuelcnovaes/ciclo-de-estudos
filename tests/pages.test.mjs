@@ -875,3 +875,22 @@ test('cycle stage due-review panel shows only current planning due subjects and 
  box.querySelector('button').click();assert.equal($('reviewSubjectFilter').value,'a');assert.equal(w.document.querySelectorAll('.review-card').length,3);assert.match($('content').textContent,/Tema late/);assert.equal(JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id)).history.length,0);
  const rows=p.reviews();for(const r of rows)r.status='completed';p.save();w.document.querySelector('[data-tab="cycle"]').click();assert.equal(w.document.querySelector('.stage-due-reviews'),null);w.close();
 });
+
+test('notes popup and automatic lesson course statuses',async()=>{
+ const d=await boot({id:'notes-status'}),w=d.window,p=w.plannerTest;
+ const full='Texto completo\n'+ '<img src=x onerror=alert(1)> '.repeat(100);
+ p.configure({subjects:[{id:'a',name:'Auditoria',contents:[]}],theoryLessons:[theoryLesson('aula','a',{status:'active',progress:70,notes:full,position:'Página 42'})]});
+ w.document.querySelector('[data-tab="theory"]').click();
+ assert.equal(w.document.querySelector('.theory-course-heading .theory-auto-status').textContent,'Andamento');
+ assert.equal(w.document.querySelector('.theory-lesson-title-cell .theory-auto-status').textContent,'Andamento');
+ const text=w.document.querySelector('.theory-note-preview'),more=w.document.querySelector('[data-theory-note]'),lesson=w.document.querySelector('.theory-lesson');
+ Object.defineProperty(text,'clientWidth',{configurable:true,value:120});Object.defineProperty(text,'scrollWidth',{configurable:true,value:900});
+ w.dispatchEvent(new w.Event('resize'));assert.equal(more.hidden,false);more.click();
+ const popup=w.document.getElementById('theoryNoteDialog');assert.equal(popup.open,true);assert.equal(lesson.open,false);
+ assert.equal(w.document.querySelectorAll('.theory-note-full')[0].textContent,'Página 42');assert.equal(w.document.querySelectorAll('.theory-note-full')[1].textContent,full);
+ assert.equal(popup.querySelector('img'),null);popup.querySelector('[data-close]').click();assert.equal(popup.open,false);
+ Object.defineProperty(text,'scrollWidth',{value:50});w.dispatchEvent(new w.Event('resize'));assert.equal(more.hidden,true);
+ w.document.querySelector('[data-theory-complete]').click();
+ assert.equal(w.document.querySelector('.theory-course-heading .theory-auto-status').textContent,'Concluído');
+ assert.equal(w.document.querySelector('.theory-lesson-title-cell .theory-auto-status').textContent,'Concluído');w.close();
+});
