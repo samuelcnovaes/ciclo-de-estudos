@@ -46,3 +46,12 @@
 .theory-lesson-title-cell{flex-wrap:wrap}.theory-lesson-title-cell>strong{min-width:55px}
 body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd094}body[data-theme=black] .theory-auto-status.completed{background:#173f2b;color:#91e4ae}
 @media(max-width:800px){.theory-note-cell{grid-column:1/-1}.theory-note-cell .theory-note-preview{grid-column:auto}.theory-auto-status{font-size:10px}}
+
+/* Keep the lesson title compact and give the freed width to notes. */
+@media(min-width:801px){
+ .theory-column-head,.theory-lesson-line{grid-template-columns:clamp(240px,24%,320px) 105px minmax(160px,1fr) minmax(170px,1.2fr) 88px}
+ .theory-lesson-title-cell{min-width:0}
+}
+@media(min-width:801px) and (max-width:1100px){
+ .theory-column-head,.theory-lesson-line{grid-template-columns:240px 92px minmax(115px,1fr) minmax(125px,1.2fr) 78px}
+}
