@@ -75,3 +75,64 @@ body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd0
 .question-tec-links{margin:16px 0;border-color:#e5b15e}.question-tec-links>summary{cursor:pointer}.question-tec-link-row{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) auto;align-items:end;gap:12px;padding:12px 0;border-top:1px solid var(--line)}.question-tec-link-row small{display:block;color:var(--muted);margin-top:6px;font-size:11px}.question-tec-link-row label{display:flex;flex-direction:column;gap:5px;margin:0;font-size:11px}.question-tec-link-row select{width:100%;max-width:100%}@media(max-width:800px){.question-tec-link-row{grid-template-columns:1fr}.question-tec-link-row button{justify-self:start}}
 
 .question-course-link{margin-left:auto;white-space:nowrap;font-size:12px;color:var(--primary,#315fb3)}
+
+/* Comfortable type scale and clear grouping in the question tracker. */
+.question-control{font-size:15px;line-height:1.55;--theory-accent:var(--blue,#315fb3)}
+.question-control .panel-title h2{font-size:26px;letter-spacing:-.5px;margin-bottom:6px}
+.question-control .panel-title p,.question-control .note{font-size:14px;line-height:1.65}
+.question-control .theory-metric{padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,var(--surface),var(--surface-soft));box-shadow:0 3px 12px #18345c06}
+.question-control .theory-metric>span{font-size:14px;font-weight:600}
+.question-control .theory-metric strong{font-size:30px;margin-top:8px;font-variant-numeric:tabular-nums}
+.question-control .theory-toolbar label{font-size:14px;font-weight:600}
+.question-control :is(button,input,select){font-size:14px}
+.question-control button{min-height:36px}
+.question-control .theory-status-filters button{padding:9px 14px;font-size:14px;border-radius:9px}
+.question-control .theory-status-filters button span{font-size:12px;padding:2px 6px}
+.question-control .question-subject{border-radius:14px;margin-bottom:18px;box-shadow:0 3px 12px #18345c05}
+.question-control .question-subject>summary{padding:14px 18px;gap:12px;background:var(--surface-soft)}
+.question-control .question-subject h3{font-size:18px;font-weight:750;margin:0;line-height:1.4}
+.question-control .question-subject>summary small{font-size:13px}
+.question-control .theory-subject-actions{padding:12px 18px;gap:8px}
+.question-control .theory-subject-actions button{font-size:13px;padding:7px 11px}
+.question-control .theory-courses{padding:0 18px 12px}
+.question-control .question-course{padding-bottom:12px}
+.question-control .question-course>.theory-course-heading{padding:14px 4px;gap:12px;align-items:center;justify-content:flex-start}
+.question-control .question-course h4{font-size:16px;font-weight:700;line-height:1.5;margin:0;flex:1 1 200px}
+.question-control .question-course-heading>small{font-size:13px;max-width:none}
+.question-control .question-course-controls{margin:0 0 14px 30px;gap:10px}
+.question-control .question-course-controls label{font-size:13px;font-weight:600;gap:6px}
+.question-control .question-course-controls select{font-size:14px;min-height:38px;padding:8px 12px}
+.question-control .question-course-controls button{font-size:13px;min-height:38px;padding:8px 12px;border-radius:9px}
+.question-control .question-course-link{font-size:13px;font-weight:650;padding:7px 11px;border:1px solid var(--line);border-radius:8px;background:var(--surface);text-decoration:none;margin-left:0}
+.question-control .question-course-link:hover{background:var(--surface-soft);text-decoration:underline}
+.question-control .question-tree-scroll{margin-left:30px;border:1px solid var(--line);border-radius:10px}
+.question-control .question-tree-table{font-size:14px;line-height:1.55}
+.question-control .question-tree-table th{font-size:13px;font-weight:650;padding:12px 10px;white-space:nowrap}
+.question-control .question-tree-table td{padding:13px 10px}
+.question-control .question-tree-table td:first-child{min-width:210px}
+.question-control .question-tree-table td:first-child strong{font-size:15px;line-height:1.55}
+.question-control .question-tree-table td:first-child small,.question-control .question-notebook-stats small{font-size:12px;line-height:1.55;margin-top:5px}
+.question-control .question-tree-table tbody tr:hover{background:var(--surface-soft)}
+.question-control .question-notebook-notes{font-size:14px;line-height:1.6;min-width:180px}
+.question-control .question-row-actions{gap:6px;min-width:180px}
+.question-control .question-row-actions :is(button,a){font-size:13px;padding:7px 10px;line-height:1.4}
+.question-control .question-status{font-size:12px;padding:5px 8px;border-radius:7px}
+.question-control :is(.question-correct,.question-wrong){font-weight:700;font-variant-numeric:tabular-nums}
+.question-control .question-tec-link-row :is(small,label){font-size:13px}
+:is(#questionNotebookDialog,#questionResolutionDialog,#questionSubjectsDialog,#questionCourseRenameDialog,#questionTopicImportDialog){font-size:15px;line-height:1.6}
+:is(#questionNotebookDialog,#questionResolutionDialog,#questionSubjectsDialog,#questionCourseRenameDialog,#questionTopicImportDialog) :is(label,.note){font-size:14px}
+:is(#questionNotebookForm,#questionResolutionForm,#questionCourseRenameForm,#questionTopicImportForm) :is(input,select,textarea){font-size:15px;line-height:1.5}
+#questionSubjectsDialog #questionSubjectsList>label{font-size:15px;padding:14px}
+.question-result-edit-table,.question-topic-import-preview table{font-size:14px}
+@media(max-width:800px){
+ .question-control .theory-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .question-control .theory-metric{padding:14px}.question-control .theory-metric strong{font-size:26px}
+ .question-control .theory-courses{padding:0 10px 10px}
+ .question-control .question-course-controls{margin-left:0}
+ .question-control .question-tree-scroll{margin-left:0}
+ .question-control .question-subject h3{font-size:17px}
+ .question-control .question-course h4{flex-basis:calc(100% - 40px)}
+ .question-control .question-course-heading>small{margin-left:0}
+ .question-control .question-course-controls label{flex:1 1 190px}
+ .question-control .question-course-controls select{width:100%}
+}
