@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Meta automática — TEC e Aprovado - GPT
 // @namespace    samuel.meta.questoes
-// @version      2.0.3
+// @version      2.0.4
 // @description  Conta questões, mantém as metas e sincroniza sessões por matéria e tópico com o Planejamento.
 // @match        https://tecconcursos.com.br/*
 // @match        https://*.tecconcursos.com.br/*
@@ -1457,12 +1457,12 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       color:#56d5ec;
     }
 
-    #topic-today-stats {
-      display:flex; gap:10px; margin-top:4px;
+    #topic-today-stats, #topic-total-stats {
+      display:flex; flex-basis:100%; gap:10px; margin-top:4px;
       font-size:10px; line-height:1.4; font-weight:500;
     }
-    #topic-today-hits { color:#69ffce; }
-    #topic-today-errors { color:#ff9da6; }
+    #topic-today-hits, #topic-total-hits { color:#69ffce; }
+    #topic-today-errors, #topic-total-errors { color:#ff9da6; }
 
     #topic-card.done #topic-today {
       background:#12352e;
@@ -1589,6 +1589,10 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       <span id="topic-total-label">ACUMULADO NO TÓPICO</span>
       <strong id="topic-total-number">—</strong>
       <span id="topic-total-last"></span>
+      <div id="topic-total-stats">
+        <span id="topic-total-hits">Acertos: —</span>
+        <span id="topic-total-errors">Erros: —</span>
+      </div>
     </div>
     <p id="topic-status"></p>
   `;
@@ -1816,7 +1820,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
   }
 
   function tally(topic) {
-    const out = { today:0, total:0, correctToday:0, wrongToday:0, last:'' };
+    const out = { today:0, total:0, correctToday:0, wrongToday:0, correctTotal:0, wrongTotal:0, last:'' };
     if (!topic) return out;
 
     const today = day();
@@ -1835,6 +1839,8 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       const n = Number(event.total) || 0;
 
       out.total += n;
+      out.correctTotal += Number(event.correct) || 0;
+      out.wrongTotal += Number(event.wrong) || 0;
       if (entry.day === today) {
         out.today += n;
         out.correctToday += Number(event.correct) || 0;
@@ -1860,6 +1866,8 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
     }
 
     const counts = tally(topic);
+    $('topic-total-hits').textContent = 'Acertos: ' + (topic ? counts.correctTotal : '—');
+    $('topic-total-errors').textContent = 'Erros: ' + (topic ? counts.wrongTotal : '—');
     $('topic-today-hits').textContent = 'Acertos: ' + (topic ? counts.correctToday : '—');
     $('topic-today-errors').textContent = 'Erros: ' + (topic ? counts.wrongToday : '—');
     const total = counts.today;
