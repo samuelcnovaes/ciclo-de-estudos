@@ -3,6 +3,17 @@ const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
 const keyed=array=>Array.isArray(array)&&array.every(item=>object(item)&&typeof item.id==='string')&&new Set(array.map(item=>item.id)).size===array.length;
 
+function consolidateDuplicateSubjects(data){
+ if(!Array.isArray(data?.subjects))return;
+ const normalized=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ').toLocaleLowerCase('pt-BR'),groups=new Map(),usage=new Map(),redirects=new Map();
+ function count(node){if(!node||typeof node!=='object')return;if(Array.isArray(node)){for(const value of node)count(value);return;}if(typeof node.subjectId==='string')usage.set(node.subjectId,(usage.get(node.subjectId)||0)+1);for(const [field,value]of Object.entries(node))if(field!=='subjects'&&field!=='exams')count(value);}
+ count(data);for(const subject of data.subjects){const name=normalized(subject.name);if(!name)continue;if(!groups.has(name))groups.set(name,[]);groups.get(name).push(subject);}
+ for(const group of groups.values()){if(group.length<2)continue;group.sort((a,b)=>(usage.get(b.id)||0)-(usage.get(a.id)||0));const canonical=group[0];for(const duplicate of group.slice(1)){redirects.set(duplicate.id,canonical.id);for(const field of ['contents','topics','mergedFrom','importedTopics'])if(Array.isArray(duplicate[field])){const existing=Array.isArray(canonical[field])?canonical[field]:[],seen=new Set(existing.map(v=>JSON.stringify(v)));canonical[field]=[...existing,...duplicate[field].filter(v=>{const value=JSON.stringify(v);if(seen.has(value))return false;seen.add(value);return true;})];}}}
+ if(!redirects.size)return;data.subjects=data.subjects.filter(s=>!redirects.has(s.id));
+ function combine(primary,secondary){if(!primary||!secondary||typeof primary!=='object'||typeof secondary!=='object'||Array.isArray(primary)||Array.isArray(secondary))return primary;const out={...secondary,...primary};for(const field of Object.keys(primary))if(secondary[field]!==undefined)out[field]=combine(primary[field],secondary[field]);return out;}function remap(node,field=''){if(!node||typeof node!=='object')return;if(Array.isArray(node)){if(['selected','subjectIds','selectedSubjects','questionSubjectIds'].includes(field))node.splice(0,node.length,...new Set(node.map(id=>redirects.get(id)||id)));for(const value of node)remap(value);return;}if(redirects.has(node.subjectId))node.subjectId=redirects.get(node.subjectId);for(const key of Object.keys(node)){if(key==='exams')continue;const mapped=redirects.get(key)||key;if(mapped!==key){node[mapped]=node[mapped]===undefined?node[key]:combine(node[mapped],node[key]);delete node[key];}remap(node[mapped],mapped);}}
+ remap(data);
+}
+
 // Merge independent fields and records against the last confirmed common snapshot.
 // Concurrent replacements keep the latest local edit and preserve the other value.
 export function mergeSnapshots(base,local,remote){
@@ -45,6 +56,9 @@ export function mergeSnapshots(base,local,remote){
   const active=result.exams.find(e=>e.id===result.activeExamId);Object.assign(result,clone(active.data));
   result.session=result.activeExamId===local.activeExamId?clone(local.session??null):null;
  }
+ consolidateDuplicateSubjects(result);
+ for(const exam of result.exams||[])if(exam.id!==result.activeExamId)consolidateDuplicateSubjects(exam.data);
+ const activeExam=result.exams?.find(exam=>exam.id===result.activeExamId);if(activeExam){const data={};for(const [field,value]of Object.entries(result))if(!['exams','activeExamId','ui','syncRecovery'].includes(field))data[field]=clone(value);activeExam.data=data;}
  function repair(data){if(!Array.isArray(data?.subjects))return;const ids=new Set(data.subjects.map(m=>m.id)),records=new Set((data.history||[]).map(h=>h.id));function keep(items,predicate,path){return (items||[]).filter(item=>{if(predicate(item))return true;recoveries.push({path,value:clone(item),reason:'reference-removed'});return false})}for(const target of [data,...(data.plannings||[]).map(p=>p.data),...(data.archivedPlannings||[]).map(p=>p.data)])if(target?.stages)target.stages=keep(target.stages,s=>ids.has(s.subjectId),'stages');if(data.edital?.subjects)data.edital.subjects=keep(data.edital.subjects,m=>ids.has(m.subjectId),'edital.subjects');if(data.reviews)data.reviews=keep(data.reviews,review=>!!review.manualSource||records.has(review.studyId),'reviews');}
  repair(result);for(const exam of result.exams||[])repair(exam.data);
  if(recoveries.length){const now=new Date().toISOString();result.syncRecovery=[...(result.syncRecovery||[]),...recoveries.map((entry,i)=>({id:globalThis.crypto.randomUUID(),savedAt:now,...entry}))];}
