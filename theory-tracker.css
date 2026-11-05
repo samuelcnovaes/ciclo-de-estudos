@@ -136,3 +136,7 @@ body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd0
  .question-control .question-course-controls label{flex:1 1 190px}
  .question-control .question-course-controls select{width:100%}
 }
+
+/* Match subject headings across theory and questions at a compact reading size. */
+.theory-page .theory-subject h3,.question-control .question-subject h3{font-size:16px;font-weight:700;line-height:1.4}
+@media(max-width:800px){.theory-page .theory-subject h3,.question-control .question-subject h3{font-size:15px}}
