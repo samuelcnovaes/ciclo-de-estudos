@@ -140,3 +140,20 @@ body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd0
 /* Match subject headings across theory and questions at a compact reading size. */
 .theory-page .theory-subject h3,.question-control .question-subject h3{font-size:16px;font-weight:700;line-height:1.4}
 @media(max-width:800px){.theory-page .theory-subject h3,.question-control .question-subject h3{font-size:15px}}
+
+/* Readable theory details and complete lesson titles. */
+.theory-page .theory-lesson-line{min-height:54px;align-items:center}
+.theory-page .theory-lesson-title-cell{overflow:visible;min-width:0;align-items:center;gap:7px}
+.theory-page .theory-lesson-title-cell>strong{font-size:15px;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.5;flex:1 1 100%;max-width:none}
+.theory-page .theory-column-head{font-size:12px;padding-top:11px;padding-bottom:11px}
+.theory-page :is(.theory-first-seen,.theory-expanded-meta,.theory-inline-progress){font-size:13px;line-height:1.6}
+.theory-page .theory-course h4{font-size:15px;line-height:1.5}
+.theory-page .theory-tree-line .theory-topic-name{font-size:14px;line-height:1.6;white-space:normal;overflow-wrap:anywhere;min-width:0}
+.theory-page .theory-tree-line{min-height:44px;gap:9px;flex-wrap:wrap}
+.theory-page .theory-tree-line .theory-topic-name{flex:1 1 150px}
+.theory-page :is(.theory-tree-heading button,.theory-row-actions button,.theory-subject-actions button,.theory-review-dates span,.theory-quick-review.theory-quick-review-empty,.theory-course-rename){font-size:12px;padding:6px 9px;line-height:1.4}
+.theory-page .theory-auto-status,.theory-page .theory-topic-count{font-size:12px}
+.theory-topic-completed{display:inline-block;margin-left:9px;padding:2px 7px;border-radius:6px;font-size:12px;font-weight:700;background:#def5e7;color:#146936}
+.theory-page .theory-tree-line .theory-topic-complete{font-size:12px;padding:6px 9px;white-space:nowrap;border:1px solid var(--line);border-radius:7px;color:var(--ink);background:var(--surface)}
+.theory-page .theory-topic-complete[aria-pressed=true]{color:#146936;background:#def5e7}
+body[data-theme=black] .theory-topic-completed,body[data-theme=black] .theory-page .theory-topic-complete[aria-pressed=true]{background:#173f2b;color:#91e4ae}
