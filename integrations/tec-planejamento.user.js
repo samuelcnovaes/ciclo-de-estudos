@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Meta automática — TEC e Aprovado - GPT
 // @namespace    samuel.meta.questoes
-// @version      2.0.6
+// @version      2.0.7
 // @description  Conta questões, mantém as metas e sincroniza sessões por matéria e tópico com o Planejamento.
 // @match        https://tecconcursos.com.br/*
 // @match        https://*.tecconcursos.com.br/*
@@ -97,10 +97,10 @@
     if(m){found={row,text,m};break;}row=row.parentElement;
    }
    if(!found)continue;const {row:element,text,m}=found;if(element.getClientRects().length===0)continue;
-   const topic=text.slice(0,m.index).replace(/\s+[\d.]+(?:\s+de\s+[\d.]+)?\s*$/,'').trim(),correct=Number(m[1].replaceAll('.','')),wrong=Number(m[2].replaceAll('.',''));if(!topic||topic.length>1000)continue;
-   candidates.push({topic,correct,wrong,depth:checkbox.getBoundingClientRect().left});
+   const prefix=text.slice(0,m.index),isSubject=!/[\d.]+\s+de\s+[\d.]+\s*$/i.test(prefix),topic=prefix.replace(/\s+[\d.]+(?:\s+de\s+[\d.]+)?\s*$/,'').trim(),correct=Number(m[1].replaceAll('.','')),wrong=Number(m[2].replaceAll('.',''));if(!topic||topic.length>1000)continue;
+   candidates.push({topic,correct,wrong,isSubject,depth:checkbox.getBoundingClientRect().left});
   }
-  const rows=candidates.filter((r,i)=>!candidates[i+1]||candidates[i+1].depth<=r.depth+2).filter(r=>r.correct+r.wrong>0).map(({depth,...r})=>r);
+  const rows=candidates.filter((r,i)=>!candidates[i+1]||candidates[i+1].depth<=r.depth+2).filter(r=>!r.isSubject&&r.correct+r.wrong>0).map(({depth,isSubject,...r})=>r);
   if(!rows.length)throw Error('Não encontrei resultados por tópico. Expanda os assuntos na tabela de desempenho do TEC e tente novamente.');
   if(rows.length>1000)throw Error('Há muitos tópicos nesta leitura. Refine os filtros.');
   return {rows,readAt:Date.now(),sourceUrl:location.href};
