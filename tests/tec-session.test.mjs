@@ -9,3 +9,9 @@ test('session validation rejects malformed counts ids oversized batches and dura
 test('userscript retains original gadget and runs it only outside the planner',()=>{const script=readFileSync('integrations/tec-planejamento.user.js','utf8');assert.match(script,/@match\s+https:\/\/samuelcnovaes.github.io\/ciclo-de-estudos\/\*/);assert.ok(script.includes('const EVENT = PREFIX + \'event:\''));assert.ok(script.includes('/* TEC PLANNER BRIDGE START */'));assert.ok(!/service_role|supabaseKey|access_token|refresh_token/.test(script));});
 
 test('subject and topic separators do not merge different pairs',()=>{const rows=core.groups([{id:'a',subject:'A|B',topic:'C',correct:1,wrong:0,elapsed:1},{id:'b',subject:'A',topic:'B|C',correct:1,wrong:0,elapsed:2}],2);assert.equal(rows.length,2);});
+
+test('same topic in different TEC notebooks stays in separate groups',()=>{
+ const c={};runInNewContext(readFileSync('src/tec-session.js','utf8'),c);
+ const rows=c.CicloTecSession.groups([{id:'a',subject:'Direito',topic:'ICMS',notebookId:'123',correct:18,wrong:1,elapsed:60},{id:'b',subject:'Direito',topic:'ICMS',notebookId:'456',correct:2,wrong:1,elapsed:120}],120);
+ assert.equal(rows.length,2);assert.equal(rows[0].notebookId,'123');assert.equal(rows[0].correct+rows[0].wrong,19);assert.equal(rows[1].notebookId,'456');
+});

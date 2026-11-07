@@ -64,9 +64,9 @@
  function elapsed(snap){const t=snap?.timer;if(!t)return 0;let delta=t.running?Math.max(0,(Date.now()-snap.at)/1000):0;if(t.mode==='pomodoro')delta=t.phase==='rest'?0:Math.min(delta,t.phaseLeft);return Math.floor(t.elapsed+delta);}
  function activeOwner(){const lease=get(P+'controller');if(lease&&lease.id!==id&&lease.until>Date.now())return false;set(P+'controller',{id,until:Date.now()+8000});return true;}
  function collect(session,snap){
-  for(const e of session.events){const topic=get('mq1:topicEvent:'+e.id)?.topic;if(topic){e.subject=topic.subject;e.topic=topic.name;}}
+  for(const e of session.events){const topic=get('mq1:topicEvent:'+e.id)?.topic;if(topic){e.subject=topic.subject;e.topic=topic.name;e.notebookId=get('mq1:topicEvent:'+e.id)?.notebookId||e.notebookId;}}
   const known=new Set(session.events.map(e=>e.id)),fresh=[];
-  for(const key of GM_listValues()){if(!key.startsWith('mq1:event:'))continue;const e=get(key);if(!e||known.has(e.id)||e.ts<session.since||get('mq1:void:'+e.id,false))continue;const topic=get('mq1:topicEvent:'+e.id)?.topic||{subject:'Matéria não identificada',name:'Tópico não identificado'};fresh.push({id:e.id,subject:topic.subject,topic:topic.name,correct:Number(e.correct)||0,wrong:Number(e.wrong)||0,ts:e.ts});}
+  for(const key of GM_listValues()){if(!key.startsWith('mq1:event:'))continue;const e=get(key);if(!e||known.has(e.id)||e.ts<session.since||get('mq1:void:'+e.id,false))continue;const topic=get('mq1:topicEvent:'+e.id)?.topic||{subject:'Matéria não identificada',name:'Tópico não identificado'};fresh.push({id:e.id,notebookId:get('mq1:topicEvent:'+e.id)?.notebookId||'',subject:topic.subject,topic:topic.name,correct:Number(e.correct)||0,wrong:Number(e.wrong)||0,ts:e.ts});}
   fresh.sort((a,b)=>a.ts-b.ts||a.id.localeCompare(b.id));const end=Math.max(session.lastElapsed||0,elapsed(snap)),start=session.lastElapsed||0;fresh.forEach((e,i)=>{e.elapsed=start+(end-start)*(i+1)/fresh.length;session.events.push(e);});
   // Manual voids remain reversible in the original gadget and are removed from this session too.
   session.events=session.events.filter(e=>!get('mq1:void:'+e.id,false));if(fresh.length)session.lastElapsed=end;session.lastClock=end;session.updatedAt=Date.now();set(SESSION,session);return fresh.length;
@@ -1785,6 +1785,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       topic,
       scope,
       qid,
+      notebookId:location.pathname.match(/\/cadernos\/(\d+)/)?.[1]||'',
       started:Date.now()
     };
   }
@@ -1805,7 +1806,8 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
         GM_setValue(key, {
           id:attempt.id,
           day:event.day,
-          topic:attempt.topic
+          topic:attempt.topic,
+          notebookId:attempt.notebookId
         });
 
         GM_setValue(P+'signal',crypto.randomUUID());
