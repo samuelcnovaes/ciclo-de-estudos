@@ -88,11 +88,40 @@
     notebookDialog.close();notebookDraft=null;api.render();api.toast('Caderno vinculado: '+d.total+' resolvidas. Histórico geral preservado, sem adicionar questões.');
    }catch(error){const errorNode=$('tecNotebookHistoryError');errorNode.textContent=error.message;errorNode.focus();errorNode.scrollIntoView?.({block:'nearest'});}
   };
+  let topicDraft=null;
+  const topicDialog=document.createElement('dialog');topicDialog.id='tecNotebookTopicsDialog';topicDialog.innerHTML='<div class="dialog-head"><h2>Vincular resultados por tópico</h2><button type="button" data-close="tecNotebookTopicsDialog">×</button></div><form id="tecNotebookTopicsForm"><label>Caderno de destino<select id="tecNotebookTopicsDestination" required></select></label><p id="tecNotebookTopicsTotals" role="status"></p><p>A página de desempenho pode incluir outros cadernos. Confira o período e a banca no TEC. Totais iguais, sozinhos, não comprovam a origem.</p><label class="check-label"><input id="tecNotebookTopicsConfirm" type="checkbox" required> Conferi os filtros: estes resultados pertencem ao caderno escolhido.</label><div id="tecNotebookTopicsRows"></div><p id="tecNotebookTopicsError" role="alert" tabindex="-1" style="color:#b42318;font-weight:700"></p><button class="primary">Atualizar os tópicos sem somar novamente</button></form>';document.body.append(topicDialog);
+  function topicDestinations(){return notebookChoices().filter(b=>b.tecNotebookSnapshot);}
+  function renderTopicDestinations(){
+   const book=(S().questionNotebooks||[]).find(b=>b.id===$('tecNotebookTopicsDestination').value),rows=topicDraft?.rows||[],correct=rows.reduce((n,r)=>n+r.correct,0),wrong=rows.reduce((n,r)=>n+r.wrong,0);$('tecNotebookTopicsTotals').textContent='Tabela lida: '+(correct+wrong)+' resolvidas · '+correct+' acertos · '+wrong+' erros'+(book?' | Caderno: '+book.tecNotebookSnapshot.total+' resolvidas · '+book.tecNotebookSnapshot.correct+' acertos · '+book.tecNotebookSnapshot.wrong+' erros':'');
+   $('tecNotebookTopicsRows').innerHTML=book?rows.map((r,i)=>{const group=S().questionNotebooks.filter(b=>b.subjectId===book.subjectId&&(b.course||'Cadernos de questões')===(book.course||'Cadernos de questões')),matches=group.filter(b=>topicKey(b.topic||b.title)===topicKey(r.topic)||topicKey(b.topic||b.title).split(' › ').at(-1)===topicKey(r.topic).split(' › ').at(-1)),match=matches.length===1?matches[0]:null;return '<label style="display:block;margin:12px 0"><strong>'+esc(r.topic)+'</strong><small style="display:block">'+(r.correct+r.wrong)+' resolvidas · '+r.correct+' acertos · '+r.wrong+' erros</small><select data-tec-topic-row="'+i+'"><option value="__new__">Criar tópico neste material</option>'+group.map(b=>'<option value="'+esc(b.id)+'" '+(b.id===match?.id?'selected':'')+'>'+esc(b.title)+'</option>').join('')+'</select></label>';}).join(''):'';
+  }
+  $('tecNotebookTopicsDestination').onchange=()=>{$('tecNotebookTopicsConfirm').checked=false;renderTopicDestinations();};
+  function openNotebookTopics(payload){
+   if(S().session)throw Error('Salve ou feche o cronômetro antes de vincular os tópicos.');
+   if(!payload||!Array.isArray(payload.rows)||!payload.rows.length||payload.rows.length>1000||!Number.isFinite(payload.readAt)||Math.abs(Date.now()-payload.readAt)>60000||payload.rows.some(r=>typeof r.topic!=='string'||!r.topic.trim()||r.topic.length>1000||![r.correct,r.wrong].every(n=>Number.isInteger(n)&&n>=0&&n<=1000000)))throw Error('Leitura de tópicos inválida.');
+   const seen=new Set();for(const r of payload.rows){const k=topicKey(r.topic);if(seen.has(k))throw Error('Há tópicos repetidos na tabela. Expanda os grupos e leia novamente.');seen.add(k);}
+   const choices=topicDestinations();if(!choices.length)throw Error('Leia e vincule primeiro o histórico do caderno na aba Questões do TEC.');
+   topicDraft={rows:payload.rows,readAt:payload.readAt,context:context()};$('tecNotebookTopicsConfirm').checked=false;$('tecNotebookTopicsError').textContent='';$('tecNotebookTopicsDestination').innerHTML=choices.map(b=>'<option value="'+esc(b.id)+'">'+esc((S().subjects.find(m=>m.id===b.subjectId)?.name||'Matéria')+' — '+(b.course||'Cadernos de questões'))+'</option>').join('');renderTopicDestinations();topicDialog.showModal();return {status:'review'};
+  }
+  $('tecNotebookTopicsForm').onsubmit=event=>{
+   event.preventDefault();try{
+    const d=topicDraft,book=(S().questionNotebooks||[]).find(b=>b.id===$('tecNotebookTopicsDestination').value);if(!topicDialog.open||!d||!same(d.context)||!book?.tecNotebookSnapshot||S().session)throw Error('O contexto mudou. Leia os tópicos novamente.');if(!$('tecNotebookTopicsConfirm').checked)throw Error('Confira os filtros e confirme o caderno de origem.');
+    const snap=book.tecNotebookSnapshot,correct=d.rows.reduce((n,r)=>n+r.correct,0),wrong=d.rows.reduce((n,r)=>n+r.wrong,0);if(correct!==snap.correct||wrong!==snap.wrong)throw Error('A tabela tem '+(correct+wrong)+' resolvidas ('+correct+' acertos e '+wrong+' erros), mas o caderno tem '+snap.total+' ('+snap.correct+' acertos e '+snap.wrong+' erros). Confira os filtros e expanda os tópicos.');
+    const selections=[...$('tecNotebookTopicsRows').querySelectorAll('[data-tec-topic-row]')].map(n=>n.value);if(selections.length!==d.rows.length)throw Error('Confira todos os tópicos.');const used=new Set();for(const id of selections){if(id==='__new__')continue;if(used.has(id))throw Error('Dois resultados foram direcionados ao mesmo tópico. Escolha destinos diferentes.');used.add(id);if(!S().questionNotebooks.some(b=>b.id===id&&b.subjectId===book.subjectId&&(b.course||'Cadernos de questões')===(book.course||'Cadernos de questões')))throw Error('Tópico de destino inválido.');}
+    if(S().questionNotebooks.length+selections.filter(id=>id==='__new__').length>5000)throw Error('Limite de tópicos atingido.');
+    const before=structuredClone(S());try{const group=S().questionNotebooks.filter(b=>b.subjectId===book.subjectId&&(b.course||'Cadernos de questões')===(book.course||'Cadernos de questões'));for(const b of group)delete b.tecTopicSnapshot;
+     d.rows.forEach((r,i)=>{let target=S().questionNotebooks.find(b=>b.id===selections[i]);if(!target){target={id:api.uid(),subjectId:book.subjectId,subjectName:book.subjectName,course:book.course,courseUrl:book.courseUrl,title:r.topic.slice(0,300),topic:r.topic,kind:'topic',target:null,tecNotebookSnapshot:{...snap}};S().questionNotebooks.push(target);}target.tecTopicSnapshot={notebookId:snap.notebookId,total:r.correct+r.wrong,correct:r.correct,wrong:r.wrong,readAt:d.readAt};});
+     if(!api.persist())throw Error('Não foi possível salvar os tópicos.');
+    }catch(error){api.setState(before);throw error;}
+    topicDialog.close();topicDraft=null;api.render();api.toast('Tópicos atualizados. Nenhuma questão adicionada ao histórico geral.');
+   }catch(error){const n=$('tecNotebookTopicsError');n.textContent=error.message;n.focus();n.scrollIntoView?.({block:'nearest'});}
+  };
   async function command(message){
    if(message.type==='snapshot'||message.type==='hello')return snapshot();
    if(!enabled())throw Error('Ative a integração pelo botão TEC no Planejamento.');
    if(!same(message.context))throw Error('Selecione no Planejamento a mesma conta, prova e planejamento da sessão do TEC.');
    if(message.type==='notebookHistory')return openNotebookHistory(message.payload);
+   if(message.type==='notebookTopics')return openNotebookTopics(message.payload);
    if(message.type==='recover'){
     if(message.sessionId&&receipt(message.sessionId))return {status:'saved',sessionId:message.sessionId,...snapshot()};
     if(S().session)throw Error('Finalize o cronômetro atual antes de recuperar a sessão guardada.');

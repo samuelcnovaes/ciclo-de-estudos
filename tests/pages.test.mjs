@@ -1014,3 +1014,8 @@ test('authoritative TEC snapshot shows 19 even when old history exceeds it and r
  assert.match(doc.querySelector('.question-course .question-course-stats').textContent,/Resolvidas 19/);assert.equal(doc.querySelector('.theory-metric strong').textContent,'49');assert.equal(doc.querySelector('[data-question-notebook="t"] .question-correct').textContent,'0');
  w.close();
 });
+
+
+test('TEC per-topic snapshots update row results and status without adding them to general history',async()=>{
+ const d=await boot({id:'tec-topic-snapshot'}),w=d.window,p=w.plannerTest,doc=w.document,readAt=Date.now();p.configure({subjects:[{id:'a',name:'Direito',contents:[]}],questionNotebooks:[{id:'b',subjectId:'a',title:'CONFAZ',course:'TEC',topic:'CONFAZ',kind:'topic',target:null,referenceQuestions:6,courseUrl:'https://www.tecconcursos.com.br/questoes/cadernos/123',tecNotebookSnapshot:{notebookId:'123',total:19,correct:18,wrong:1,readAt},tecTopicSnapshot:{notebookId:'123',total:6,correct:5,wrong:1,readAt}}],history:[{id:'old',kind:'study',subjectId:'a',questionNotebookId:'b',topic:'CONFAZ',correct:9,wrong:2,date:new Date(readAt-1000).toISOString(),externalSource:{provider:'tec'}}],stages:[],reviews:[]});p.save();doc.querySelector('[data-tab="theory"]').click();doc.querySelector('[data-learning-view="questions"]').click();const row=doc.querySelector('[data-question-notebook="b"]');assert.equal(row.querySelector('.question-correct').textContent,'5');assert.equal(row.querySelector('.question-wrong').textContent,'1');assert.ok(row.querySelector('.question-status.completed'));assert.equal(doc.querySelector('.theory-metric strong').textContent,'11');w.close();
+});
