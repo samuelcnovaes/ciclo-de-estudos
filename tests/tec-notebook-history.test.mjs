@@ -12,17 +12,16 @@ function setup(){
  const choose=()=>{w.document.getElementById('tecNotebookHistoryDestination').value='topic';w.document.getElementById('tecNotebookHistoryDestination').dispatchEvent(new w.Event('change'));};const submit=()=>w.document.getElementById('tecNotebookHistoryForm').dispatchEvent(new w.Event('submit',{cancelable:true}));
  return {w,send,payload,choose,submit,state:()=>state,fail:()=>persist=false};
 }
-test('notebook history reuses selected legacy records and repeated imports update a single balance',async()=>{
- const t=setup(),{w}=t;try{
- assert.equal((await t.send(t.payload())).ok,true);t.choose();t.submit();assert.match(w.document.getElementById('tecNotebookHistoryError').textContent,/origem/);assert.equal(t.state().history.length,2);
- w.document.querySelector('[data-tec-existing="old"]').value='current';w.document.querySelector('[data-tec-existing="other"]').value='other';t.submit();
- let s=t.state(),balance=s.history.find(h=>h.externalSource?.type==='notebook-history');assert.equal(s.history.length,3);assert.equal(balance.correct,15);assert.equal(balance.wrong,0);assert.equal(s.history.find(h=>h.id==='old').seconds,300);assert.equal(s.history.reduce((n,h)=>n+h.correct+h.wrong,0),21);assert.equal(s.history.find(h=>h.id==='other').externalSource.notebookId,undefined);
- await t.send(t.payload());t.choose();w.document.querySelector('[data-tec-existing="other"]').value='other';t.submit();assert.equal(t.state().history.length,3);assert.equal(t.state().history.reduce((n,h)=>n+h.correct+h.wrong,0),21);
- await t.send({...t.payload(),correct:20,total:21});t.choose();w.document.querySelector('[data-tec-existing="other"]').value='other';t.submit();assert.equal(t.state().history.length,3);assert.equal(t.state().history.find(h=>h.externalSource?.type==='notebook-history').correct,17);
+test('notebook totals replace the material display without adding or changing any historical record',async()=>{
+ const t=setup(),{w}=t;try{const before=structuredClone(t.state().history);
+ assert.equal((await t.send(t.payload())).ok,true);t.choose();assert.equal(w.document.querySelector('[data-tec-existing]'),null);assert.match(w.document.getElementById('tecNotebookHistoryPreview').textContent,/19 resolvidas/);t.submit();
+ assert.equal(w.document.getElementById('tecNotebookHistoryDialog').open,false);assert.deepEqual(t.state().history,before);assert.equal(t.state().questionNotebooks[0].tecNotebookSnapshot.total,19);
+ await t.send(t.payload());t.choose();t.submit();assert.deepEqual(t.state().history,before);assert.equal(t.state().questionNotebooks.length,1);
+ await t.send({...t.payload(),total:21,correct:20});t.choose();t.submit();assert.deepEqual(t.state().history,before);assert.equal(t.state().questionNotebooks[0].tecNotebookSnapshot.total,21);
  }finally{w.close();}
 });
 test('notebook import rejects active timers malformed totals and stale reads; failed save rolls back',async()=>{
- const t=setup();try{assert.equal((await t.send({...t.payload(),total:22})).ok,false);assert.equal((await t.send({...t.payload(),readAt:Date.now()-120000})).ok,false);t.state().session={};assert.equal((await t.send(t.payload())).ok,false);delete t.state().session;await t.send(t.payload());t.choose();for(const n of t.w.document.querySelectorAll('[data-tec-existing]'))n.value='other';const before=structuredClone(t.state());t.fail();t.submit();assert.deepEqual(t.state(),before);}finally{t.w.close();}
+ const t=setup();try{assert.equal((await t.send({...t.payload(),total:22})).ok,false);assert.equal((await t.send({...t.payload(),readAt:Date.now()-120000})).ok,false);t.state().session={};assert.equal((await t.send(t.payload())).ok,false);delete t.state().session;await t.send(t.payload());t.choose();const before=structuredClone(t.state());t.fail();t.submit();assert.deepEqual(t.state(),before);}finally{t.w.close();}
 });
 test('TEC reader reads the displayed notebook totals rather than the gadget all-day counts',()=>{
  const source=readFileSync('integrations/tec-planejamento.user.js','utf8'),start=source.indexOf(' function readCurrentNotebook(){'),end=source.indexOf(" $('readNotebook').onclick",start),dom=new JSDOM('<a href="/questoes/cadernos/123">Meu caderno</a><div>Questão 57 de 121 <span>(19 Resolvidas, <b>18 Acertos</b> e <b>1 Erros</b>)</span></div><div id="tec-planner-widget">(999 Resolvidas, 999 Acertos e 0 Erros)</div>',{url:'https://www.tecconcursos.com.br/questoes/cadernos/123',runScripts:'outside-only'});

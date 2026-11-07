@@ -1006,3 +1006,11 @@ test('TEC course counts only its notebook while root preserves all days and note
  const resolve=w.CicloTheoryTracker.resolveQuestionNotebook,workspace={questionNotebooks:[{id:'a',subjectId:'a',topic:'ICMS',courseUrl:'https://www.tecconcursos.com.br/questoes/cadernos/123'}]};
  assert.equal(resolve(workspace,{...history('new','456',1,0),questionNotebookId:undefined}).match,null);assert.equal(resolve(workspace,{...history('new','123',1,0),questionNotebookId:undefined}).match.id,'a');w.close();
 });
+
+
+test('authoritative TEC snapshot shows 19 even when old history exceeds it and resync never adds the totals twice',async()=>{
+ const d=await boot({id:'tec-authoritative'}),w=d.window,p=w.plannerTest,doc=w.document,readAt=Date.now(),snapshot={notebookId:'123',total:19,correct:18,wrong:1,readAt};
+ p.configure({subjects:[{id:'a',name:'Direito',contents:[]}],questionNotebooks:[{id:'t',subjectId:'a',title:'ICMS',topic:'ICMS',course:'Meu caderno',courseUrl:'https://www.tecconcursos.com.br/questoes/cadernos/123',kind:'topic',target:null,tecNotebookSnapshot:snapshot}],history:[{id:'old',kind:'study',subjectId:'a',topic:'ICMS',questionNotebookId:'t',correct:45,wrong:4,date:new Date(readAt-1000).toISOString(),seconds:300,externalSource:{provider:'tec'}}],stages:[],reviews:[]});p.save();doc.querySelector('[data-tab="theory"]').click();doc.querySelector('[data-learning-view="questions"]').click();
+ assert.match(doc.querySelector('.question-course .question-course-stats').textContent,/Resolvidas 19/);assert.equal(doc.querySelector('.theory-metric strong').textContent,'49');assert.equal(doc.querySelector('[data-question-notebook="t"] .question-correct').textContent,'0');
+ w.close();
+});
