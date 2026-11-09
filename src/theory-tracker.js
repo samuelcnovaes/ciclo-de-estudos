@@ -145,8 +145,8 @@
    const catalogs=(S().edital?.subjects||[]).filter(g=>g.subjectId===parentId||label(g.name)===label(parent.name));
    const topicNames=nodes=>(nodes||[]).flatMap(t=>typeof t==='string'?[t]:[t.name||t.title||'',...topicNames(t.children||t.topics)]);
    if(topicNames([...(parent.topics||[]),...catalogs.flatMap(g=>g.topics||[])]).some(includes))return true;
-   // Reforma Tributária is a component of Direito Tributário even when registered separately.
-   return label(parent.name)==='direito tributario'&&childNames.has('reforma tributaria');
+   // The Reforma Tributária planning stage uses notebooks registered in these disciplines.
+   return label(parent.name)==='reforma tributaria'&&['direito tributario','direito constitucional'].some(name=>childNames.has(name));
   }
   function ongoingQuestionMaterials(subjectId){const groups=new Map();for(const book of notebooks().filter(b=>questionSubjectBelongsTo(subjectId,b.subjectId))){const course=book.course||'Cadernos de questões',id=JSON.stringify([book.subjectId,course]);if(!groups.has(id))groups.set(id,{subjectId:book.subjectId,course,books:[]});groups.get(id).books.push(book);}return [...groups.values()].filter(({subjectId,course,books})=>books.some(b=>questionBookStatus(b)!=='completed')&&(books.some(b=>questionBookStatus(b)==='active')||questionMaterialTotals(subjectId,course,new Set(books.map(b=>b.id))).total>0)).map(({subjectId,course,books})=>({subjectId,course,subjectName:(S().subjects||[]).find(m=>m.id===subjectId)?.name||'',count:books.filter(b=>questionBookStatus(b)==='active').length}));}
   function openQuestionMaterial(subjectId,course){if(!ongoingQuestionMaterials(subjectId).some(m=>m.course===course))return false;questionExam=S().activeExamId;learningView='questions';questionSubject=subjectId;questionSearch='';questionStatusFilter='all';questionOpenSubjects.add(subjectId);questionOpenCourses.add(JSON.stringify([subjectId,course]));render();const node=[...$('content').querySelectorAll('[data-question-course]')].find(n=>n.dataset.questionCourse===JSON.stringify([subjectId,course]));node?.scrollIntoView?.({block:'center',behavior:'smooth'});return true;}
