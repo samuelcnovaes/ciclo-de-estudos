@@ -1900,8 +1900,12 @@ function cycleFinishForecast(now=new Date()){
  if(!remaining&&!pendingTasks)return {value:'Ciclo concluído',note:'Todas as etapas foram concluídas.'};
  if(pendingTasks)return {value:'Sem previsão de término',note:'Há etapas sem meta de tempo. Defina uma duração para estimar o ciclo completo.'};
  if(!average)return {value:'Sem previsão de término',note:'Nenhum tempo estudado nos últimos 7 dias.'};
- const days=Math.ceil(remaining/average),date=new Date(now);date.setDate(date.getDate()+days);
- return {value:date.toLocaleDateString('pt-BR'),days,average,remaining,note:'Em cerca de '+days+' dia'+(days===1?'':'s')+' · Média: '+short(average)+'/dia nos últimos 7 dias, considerando apenas os '+studyDays+' dias com estudo.'+(estimatedQuestions?' Metas de questões: estimativa de 3 min por questão restante.':'')};
+ const days=Math.ceil(remaining/average),date=new Date(now),weekdays=[...new Set((state.planner?.weekdays??[0,1,2,3,4,5,6]).map(Number).filter(day=>Number.isInteger(day)&&day>=0&&day<=6))];
+ if(!weekdays.length)return {value:'Selecione os dias de estudo',note:'Marque no planejamento os dias em que pretende estudar para calcular a previsão.'};
+ const fullWeeks=Math.floor((days-1)/weekdays.length);date.setDate(date.getDate()+fullWeeks*7);let daysLeft=days-fullWeeks*weekdays.length;
+ while(daysLeft>0){date.setDate(date.getDate()+1);if(weekdays.includes((date.getDay()+6)%7))daysLeft--;}
+
+ return {value:date.toLocaleDateString('pt-BR'),days,average,remaining,note:'Em cerca de '+days+' dia'+(days===1?'':'s')+' de estudo, nos dias marcados no planejamento · Média: '+short(average)+'/dia nos últimos 7 dias, considerando apenas os '+studyDays+' dias com estudo.'+(estimatedQuestions?' Metas de questões: estimativa de 3 min por questão restante.':'')};
 }
 function cycleFinishForecastMarkup(){const forecast=cycleFinishForecast();return `<div class="cycle-finish-forecast" style="margin-top:10px;font-size:12px;line-height:1.6"><strong>Previsão de término do ciclo: ${esc(forecast.value)}</strong><br><span style="color:var(--muted)">${esc(forecast.note)}</span></div>`;}
 function planningIndicatorsData(now=new Date()){
