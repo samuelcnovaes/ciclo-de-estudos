@@ -1885,16 +1885,23 @@ function planningActivityTimeMarkup(){
 document.addEventListener('click',event=>{const button=event.target.closest('[data-planning-activity]');if(button){const key=JSON.stringify([state.activeExamId,state.activePlanningId,button.dataset.planningActivity]),open=button.getAttribute('aria-expanded')!=='true';if(open)expandedPlanningActivities.add(key);else expandedPlanningActivities.delete(key);button.setAttribute('aria-expanded',String(open));button.textContent=(open?'▾ ':'▸ ')+button.dataset.planningActivity;const row=document.getElementById(button.getAttribute('aria-controls'));if(row)row.hidden=!open;}for(const menu of document.querySelectorAll('.planning-options[open]'))if(!menu.contains(event.target))menu.open=false;});
 document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;for(const menu of document.querySelectorAll('.planning-options[open]')){menu.open=false;menu.querySelector('summary')?.focus();}});
 const renderBeforeActivityTimeSummary=render;render=function(){renderBeforeActivityTimeSummary();if(!['cycle','planner'].includes(tab))return;const panel=document.createElement('div');panel.innerHTML=planningActivityTimeMarkup();const section=panel.firstElementChild,anchor=$('content').querySelector('.cycle-layout');if(anchor)anchor.before(section);else $('content').prepend(section);};
+function forecastStageSeconds(stage,remainingOnly=true){
+ const amount=remainingOnly?Math.max(0,Number(stage.target)-live(stage)):Math.max(0,Number(stage.target)||0);
+ if(!isTask(stage))return amount;
+ if(!amount)return 0;
+ const unit=cycleActivityKey(stage.unit),activity=cycleActivityKey(stage.content);
+ return /^(questao|questoes|question|questions)$/.test(unit)||(!unit||unit==='tarefas')&&activity.includes('quest')?amount*180:null;
+}
 function cycleFinishForecast(now=new Date()){
  const start=new Date(now);start.setDate(start.getDate()-6);start.setHours(0,0,0,0);
  const records=state.history.filter(r=>r.kind==='study'&&new Date(r.date)>=start&&new Date(r.date)<=now);
- const studied=records.reduce((n,r)=>n+Math.max(0,Number(r.seconds)||0),0),studyDays=new Set(records.filter(r=>Number(r.seconds)>0).map(r=>dayKey(new Date(r.date)))).size,average=studyDays?studied/studyDays:0,stages=state.stages.filter(s=>!isTask(s)),remaining=stages.reduce((n,s)=>n+Math.max(0,s.target-live(s)),0),pendingTasks=state.stages.some(s=>isTask(s)&&live(s)<s.target);
+ const studied=records.reduce((n,r)=>n+Math.max(0,Number(r.seconds)||0),0),studyDays=new Set(records.filter(r=>Number(r.seconds)>0).map(r=>dayKey(new Date(r.date)))).size,average=studyDays?studied/studyDays:0,estimates=state.stages.map(s=>forecastStageSeconds(s)),remaining=estimates.reduce((n,value)=>n+(value||0),0),pendingTasks=estimates.some(value=>value===null),estimatedQuestions=state.stages.some(s=>isTask(s)&&forecastStageSeconds(s)>0);
  if(!state.stages.length)return {value:'Sem etapas',note:'Adicione etapas ao ciclo.'};
  if(!remaining&&!pendingTasks)return {value:'Ciclo concluído',note:'Todas as etapas foram concluídas.'};
  if(pendingTasks)return {value:'Sem previsão de término',note:'Há etapas sem meta de tempo. Defina uma duração para estimar o ciclo completo.'};
  if(!average)return {value:'Sem previsão de término',note:'Nenhum tempo estudado nos últimos 7 dias.'};
  const days=Math.ceil(remaining/average),date=new Date(now);date.setDate(date.getDate()+days);
- return {value:date.toLocaleDateString('pt-BR'),days,average,remaining,note:'Em cerca de '+days+' dia'+(days===1?'':'s')+' · Média: '+short(average)+'/dia nos últimos 7 dias, considerando apenas os '+studyDays+' dias com estudo.'};
+ return {value:date.toLocaleDateString('pt-BR'),days,average,remaining,note:'Em cerca de '+days+' dia'+(days===1?'':'s')+' · Média: '+short(average)+'/dia nos últimos 7 dias, considerando apenas os '+studyDays+' dias com estudo.'+(estimatedQuestions?' Metas de questões: estimativa de 3 min por questão restante.':'')};
 }
 function cycleFinishForecastMarkup(){const forecast=cycleFinishForecast();return `<div class="cycle-finish-forecast" style="margin-top:10px;font-size:12px;line-height:1.6"><strong>Previsão de término do ciclo: ${esc(forecast.value)}</strong><br><span style="color:var(--muted)">${esc(forecast.note)}</span></div>`;}
 function planningIndicatorsData(now=new Date()){
