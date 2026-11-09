@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Meta automática — TEC e Aprovado - GPT
 // @namespace    samuel.meta.questoes
-// @version      2.0.7
+// @version      2.0.8
 // @description  Conta questões, mantém as metas e sincroniza sessões por matéria e tópico com o Planejamento.
 // @match        https://tecconcursos.com.br/*
 // @match        https://*.tecconcursos.com.br/*
@@ -100,10 +100,11 @@
    const prefix=text.slice(0,m.index),isSubject=!/[\d.]+\s+de\s+[\d.]+\s*$/i.test(prefix),topic=prefix.replace(/\s+[\d.]+(?:\s+de\s+[\d.]+)?\s*$/,'').trim(),correct=Number(m[1].replaceAll('.','')),wrong=Number(m[2].replaceAll('.',''));if(!topic||topic.length>1000)continue;
    candidates.push({topic,correct,wrong,isSubject,depth:checkbox.getBoundingClientRect().left});
   }
+  let currentSubject='';for(const row of candidates){if(row.isSubject)currentSubject=row.topic;row.subject=currentSubject;}
   const rows=candidates.filter((r,i)=>!candidates[i+1]||candidates[i+1].depth<=r.depth+2).filter(r=>!r.isSubject&&r.correct+r.wrong>0).map(({depth,isSubject,...r})=>r);
   if(!rows.length)throw Error('Não encontrei resultados por tópico. Expanda os assuntos na tabela de desempenho do TEC e tente novamente.');
   if(rows.length>1000)throw Error('Há muitos tópicos nesta leitura. Refine os filtros.');
-  return {rows,readAt:Date.now(),sourceUrl:location.href};
+  return {rows,subjects:[...new Set(rows.map(r=>r.subject).filter(Boolean))],readAt:Date.now(),sourceUrl:location.href};
  }
  $('readTopics').onclick=async()=>{try{const data=readPerformanceTopics();await request('notebookTopics',data,null);status('Tópicos lidos. Confira o caderno de destino e os filtros na aba do Planejamento.');plannerFocus();}catch(error){status(error.message);}};
  $('readNotebook').onclick=async()=>{try{const data=readCurrentNotebook();await request('notebookHistory',data,null);status(data.total+' resolvidas · '+data.correct+' acertos · '+data.wrong+' erros. Confira o vínculo na aba do Planejamento.');plannerFocus();}catch(error){status(error.message);}};
