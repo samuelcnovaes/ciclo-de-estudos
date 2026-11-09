@@ -1828,9 +1828,14 @@ function renderOngoingQuestionNotices(){
   if(!stage||!row||cycleActivityKey(stage.content)!=='questoes'||row.querySelector('.planning-question-notice'))continue;
   if(!materials.has(stage.subjectId))materials.set(stage.subjectId,theoryTracker.ongoingQuestionMaterials(stage.subjectId));
   const active=materials.get(stage.subjectId);if(!active.length)continue;
-  const notice=document.createElement('div');notice.className='planning-question-notice';notice.style.cssText='grid-column:1/-1;flex:1 1 100%;width:100%;padding:10px 12px;margin-top:8px;border:1px solid var(--line);border-radius:9px;background:var(--surface-soft);font-size:13px;line-height:1.6';
-  notice.innerHTML='<strong>◎ Há caderno em andamento desta matéria em Questões</strong>'+active.map(m=>`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:6px"><span>${esc(m.course)}</span><button type="button" data-planning-question-material="${esc(JSON.stringify([state.activeExamId,m.subjectId,m.course]))}">Abrir em Questões →</button></div>`).join('');
-  row.append(notice);
+  const notice=document.createElement('aside');notice.className='stage-due-reviews planning-question-notice';notice.setAttribute('aria-label','Cadernos em andamento desta matéria');
+  notice.innerHTML='<div class="stage-due-heading"><strong>Cadernos em andamento</strong><span>'+active.length+'</span></div><ul>'+active.map(m=>`<li><span title="${esc(m.course)}">${esc(m.course)}</span><button type="button" data-planning-question-material="${esc(JSON.stringify([state.activeExamId,m.subjectId,m.course]))}">Abrir em Questões →</button></li>`).join('')+'</ul>';
+  if(row.matches('.row')){
+   const sections=document.createElement('div');sections.className='stage-notice-sections';
+   const reviews=row.querySelector('.stage-due-reviews');if(reviews)sections.append(reviews);
+   sections.append(notice);sections.classList.toggle('has-both',!!reviews);row.classList.add('has-stage-notices');
+   const subjectCell=row.querySelector('.subject');if(subjectCell)subjectCell.after(sections);else row.append(sections);
+  }else row.append(notice);
  }
 }
 const renderBeforeQuestionNotices=render;render=function(){renderBeforeQuestionNotices();renderOngoingQuestionNotices();};
@@ -2191,3 +2196,23 @@ body[data-theme="black"] :is(button,input,select,textarea):focus-visible{outline
 
 <style>.statistics-topic-performance .topic-performance-toolbar{display:grid;grid-template-columns:max-content minmax(240px,360px) minmax(220px,1fr);align-items:end;gap:14px}.statistics-topic-performance .topic-performance-toolbar>.actions{align-self:end;flex-wrap:nowrap;gap:8px}.statistics-topic-performance .topic-performance-toolbar button{height:42px;white-space:nowrap}.statistics-topic-performance .topic-performance-source,.statistics-topic-performance .topic-performance-search{display:grid;gap:6px;margin:0;min-width:0;max-width:none;font-size:12px;line-height:1.4}.statistics-topic-performance .topic-performance-toolbar select,.statistics-topic-performance .topic-performance-toolbar #topicPerformanceSearch{height:42px;min-height:42px;width:100%;min-width:0;max-width:none;margin:0;padding:9px 11px;box-sizing:border-box;font-size:12px}@media(max-width:1000px){.statistics-topic-performance .topic-performance-toolbar{grid-template-columns:1fr 1fr}.statistics-topic-performance .topic-performance-toolbar>.actions{grid-column:1/-1}}@media(max-width:650px){.statistics-topic-performance .topic-performance-toolbar{grid-template-columns:minmax(0,1fr)}} </style>
 <style>.review-add-days{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.review-add-days>label{margin:0;font-size:12px}.review-add-days>span{font-size:12px;color:var(--muted)}.review-add-days>input{width:85px}.review-date-preview{display:block;flex-basis:100%;font-size:12px;line-height:1.5;color:var(--green);margin-top:6px}.review-date-preview:empty{display:none}</style>
+<style id="stage-notice-sections-layout">
+.cycle-layout .row.has-stage-notices,.row.has-stage-notices{grid-template-columns:minmax(170px,1fr) minmax(220px,1.3fr) auto;align-items:center}
+.row.has-stage-notices>.subject{grid-column:1;grid-row:1}
+.row.has-stage-notices>.stage-study-actions{grid-column:3;grid-row:1}
+.row.has-stage-notices>.progress{grid-column:1/-1;grid-row:2}
+.stage-notice-sections{grid-column:2;grid-row:1;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.stage-notice-sections.has-both{grid-template-columns:repeat(2,minmax(0,1fr))}
+.stage-notice-sections>.stage-due-reviews{grid-column:auto;grid-row:auto;margin:0;min-width:0}
+.planning-question-notice{border-left-color:var(--green);margin-top:8px}
+.planning-question-notice li{flex-wrap:wrap;gap:4px 10px}
+.planning-question-notice li>span{min-width:0;max-width:100%}
+.planning-question-notice li>button{display:block;margin-left:auto;padding:2px 0;border:0;background:transparent;color:var(--green);font-size:11px;font-weight:650;white-space:nowrap}
+@media(max-width:900px){
+.cycle-layout .row.has-stage-notices,.row.has-stage-notices{grid-template-columns:minmax(0,1fr) auto}
+.row.has-stage-notices>.stage-study-actions{grid-column:2}
+.row.has-stage-notices>.stage-notice-sections{grid-column:1/-1;grid-row:2}
+.row.has-stage-notices>.progress{grid-row:3}
+}
+@media(max-width:600px){.stage-notice-sections.has-both{grid-template-columns:minmax(0,1fr)}}
+</style>
