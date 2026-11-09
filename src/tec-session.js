@@ -15,6 +15,9 @@
  }
  function groups(input,totalSeconds){
   const rows=events(input);if(!Number.isInteger(totalSeconds)||totalSeconds<0||totalSeconds>604800)throw Error('Tempo total inválido.');
+  // Missing notebook metadata may occur when TEC navigates between question pages.
+  const notebookScopes=new Map();for(const e of rows){const k=JSON.stringify([key(e.subject),key(e.topic)]);if(!notebookScopes.has(k))notebookScopes.set(k,new Set());if(e.notebookId)notebookScopes.get(k).add(e.notebookId);}
+  for(const e of rows){const scopes=notebookScopes.get(JSON.stringify([key(e.subject),key(e.topic)]));if(!e.notebookId&&scopes.size===1)e.notebookId=[...scopes][0];}
   const map=new Map();let previous=0,last=null;
   for(const e of rows){const k=JSON.stringify([key(e.subject),key(e.topic),e.notebookId||'']);if(!map.has(k))map.set(k,{id:'g'+map.size,subject:e.subject,topic:e.topic,...(e.notebookId?{notebookId:e.notebookId}:{}),correct:0,wrong:0,weight:0,questionIds:[]});const g=map.get(k);g.correct+=e.correct;g.wrong+=e.wrong;g.questionIds.push(e.id);const at=Math.min(totalSeconds,e.elapsed);g.weight+=Math.max(0,at-previous);previous=Math.max(previous,at);last=g;}
   if(last)last.weight+=Math.max(0,totalSeconds-previous);const result=[...map.values()],weight=result.reduce((n,g)=>n+g.weight,0),count=result.reduce((n,g)=>n+g.correct+g.wrong,0);

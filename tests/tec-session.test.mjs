@@ -15,3 +15,12 @@ test('same topic in different TEC notebooks stays in separate groups',()=>{
  const rows=c.CicloTecSession.groups([{id:'a',subject:'Direito',topic:'ICMS',notebookId:'123',correct:18,wrong:1,elapsed:60},{id:'b',subject:'Direito',topic:'ICMS',notebookId:'456',correct:2,wrong:1,elapsed:120}],120);
  assert.equal(rows.length,2);assert.equal(rows[0].notebookId,'123');assert.equal(rows[0].correct+rows[0].wrong,19);assert.equal(rows[1].notebookId,'456');
 });
+
+test('missing notebook metadata joins a unique notebook without losing results or time',()=>{
+ const input=[{id:'a',subject:'Direito',topic:'Responsabilidade',notebookId:'123',correct:5,wrong:2,elapsed:1086},{id:'b',subject:'Direito',topic:'Responsabilidade',correct:2,wrong:1,elapsed:2524}];
+ const rows=core.groups(input,2524);assert.equal(rows.length,1);assert.equal(rows[0].correct,7);assert.equal(rows[0].wrong,3);assert.equal(rows[0].seconds,2524);assert.equal(rows[0].notebookId,'123');assert.equal(input[1].notebookId,undefined);
+});
+test('unknown notebook remains separate when the same topic belongs to multiple notebooks',()=>{
+ const input=['123','456',undefined].map((notebookId,i)=>({id:'q'+i,subject:'Direito',topic:'ICMS',notebookId,correct:1,wrong:0,elapsed:i+1}));
+ assert.equal(core.groups(input,3).length,3);
+});
