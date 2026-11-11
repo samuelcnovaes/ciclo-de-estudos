@@ -1029,3 +1029,14 @@ test('daily priority cards stay inside planning stages and show saved question p
  w.document.querySelector('[data-tab="cycle"]').click();
  const card=w.document.querySelector('.daily-priority-stages');assert.ok(card);assert.ok(card.closest('.panel').querySelector('#editStagesHeader'));assert.equal(card.querySelector('progress').value,4);assert.equal(card.querySelector('progress').max,10);assert.match(card.textContent,/6 questões restantes/);card.querySelector('[data-daily-priority-start]').click();assert.equal(w.document.getElementById('focusDialog').open,true);assert.equal(w.document.querySelectorAll('.daily-priority-stages').length,1);w.close();
 });
+
+test('curriculum release checks share one completion index and refresh after history and progress changes',async()=>{
+ const d=await boot({id:'curriculum-index'}),w=d.window,p=w.plannerTest,today=new Date(),old=new Date(today.getTime()-8*86400000),nowKey=x=>[x.getFullYear(),String(x.getMonth()+1).padStart(2,'0'),String(x.getDate()).padStart(2,'0')].join('-');let reads=0;
+ const stages=Array.from({length:600},(_,i)=>({id:'s'+i,subjectId:'a',content:i<300?'Conteúdo novo':'Questões',mode:'time',target:1200,get done(){reads++;return i<300?1200:0;},curriculum:{key:'k'+i,phase:i<300?'theory':'questions',after:i<300?null:'k'+(i-300),delayDays:i<300?0:3}}));
+ p.configure({subjects:[{id:'a',name:'Auditoria',color:'#315fb3',contents:['Questões']}],stages,history:stages.slice(0,300).map(s=>({id:'h'+s.id,stageId:s.id,kind:'study',date:old.toISOString(),seconds:1200})),edital:{subjects:[],plan:{curriculumVersion:1,curriculumStart:nowKey(old)}},session:null});
+ for(const stage of stages.slice(300))assert.equal(p.stageReady(stage),true);
+ assert.ok(reads<=600,'repeated full scan of completed stages for each pending stage: '+reads);
+ p.configure({history:[{id:'recent',kind:'study',stageId:'s0',date:today.toISOString(),seconds:1200}]});assert.equal(p.stageReady(stages[300]),false);
+ p.configure({history:[{id:'old',kind:'study',stageId:'s0',date:old.toISOString(),seconds:1200}]});assert.equal(p.stageReady(stages[300]),true);
+ p.configure({stages:[{...stages[0],done:0},stages[300]]});assert.equal(p.stageReady(stages[300]),false);w.close();
+});
