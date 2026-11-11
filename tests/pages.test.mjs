@@ -6,7 +6,7 @@ import {SnapshotSync} from '../src/snapshot-sync.js';
 import {mergeSnapshots} from '../src/snapshot-merge.js';
 const html=readFileSync('index.html','utf8');
 async function boot(user,stored=null,connected=false,options={}){
- const dom=new JSDOM(html,{url:'https://samuelcnovaes.github.io/ciclo-de-estudos/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;w.eval(readFileSync('src/planning-migration.js','utf8'));w.eval(readFileSync('src/theory-tracker.js','utf8'));w.eval(readFileSync('src/performance-priorities.js','utf8'));w.eval(readFileSync('src/tec-session.js','utf8'));w.eval(readFileSync('src/tec-planner-bridge.js','utf8'));w.structuredClone=structuredClone;w.testIntervals=[];w.setInterval=(callback,delay)=>{w.testIntervals.push({callback,delay});return 0};w.setTimeout=(callback,delay)=>{if(delay===1500)callback();return 0};w.confirm=()=>true;
+ const dom=new JSDOM(html,{url:'https://samuelcnovaes.github.io/ciclo-de-estudos/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;w.eval(readFileSync('src/daily-priorities.js','utf8'));w.eval(readFileSync('src/planning-migration.js','utf8'));w.eval(readFileSync('src/theory-tracker.js','utf8'));w.eval(readFileSync('src/performance-priorities.js','utf8'));w.eval(readFileSync('src/tec-session.js','utf8'));w.eval(readFileSync('src/tec-planner-bridge.js','utf8'));w.structuredClone=structuredClone;w.testIntervals=[];w.setInterval=(callback,delay)=>{w.testIntervals.push({callback,delay});return 0};w.setTimeout=(callback,delay)=>{if(delay===1500)callback();return 0};w.confirm=()=>true;
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
  if(options.Worker)w.Worker=options.Worker;
  if(stored)w.localStorage.setItem('ciclo-estudos-v1:cloud:'+user.id,stored);
@@ -1018,4 +1018,14 @@ test('authoritative TEC snapshot shows 19 even when old history exceeds it and r
 
 test('TEC per-topic snapshots update row results and status without adding them to general history',async()=>{
  const d=await boot({id:'tec-topic-snapshot'}),w=d.window,p=w.plannerTest,doc=w.document,readAt=Date.now();p.configure({subjects:[{id:'a',name:'Direito',contents:[]}],questionNotebooks:[{id:'b',subjectId:'a',title:'CONFAZ',course:'TEC',topic:'CONFAZ',kind:'topic',target:null,referenceQuestions:6,courseUrl:'https://www.tecconcursos.com.br/questoes/cadernos/123',tecNotebookSnapshot:{notebookId:'123',total:19,correct:18,wrong:1,readAt},tecTopicSnapshot:{notebookId:'123',total:6,correct:5,wrong:1,readAt}}],history:[{id:'old',kind:'study',subjectId:'a',questionNotebookId:'b',topic:'CONFAZ',correct:9,wrong:2,date:new Date(readAt-1000).toISOString(),externalSource:{provider:'tec'}}],stages:[],reviews:[]});p.save();doc.querySelector('[data-tab="theory"]').click();doc.querySelector('[data-learning-view="questions"]').click();const row=doc.querySelector('[data-question-notebook="b"]');assert.equal(row.querySelector('.question-correct').textContent,'5');assert.equal(row.querySelector('.question-wrong').textContent,'1');assert.ok(row.querySelector('.question-status.completed'));assert.equal(doc.querySelector('.theory-metric strong').textContent,'11');w.close();
+});
+
+test('daily priority cards stay inside planning stages and show saved question progress',async()=>{
+ const d=await boot({id:'priority-layout'}),w=d.window,p=w.plannerTest;
+ const today=new Date().toISOString();
+ p.configure({subjects:[{id:'a',name:'Direito Tributário',color:'#315fb3',contents:['Questões']}],stages:[{id:'s',subjectId:'a',content:'Questões',mode:'time',target:1800,done:0}],history:[{id:'h',kind:'study',subjectId:'a',content:'Questões',date:today,seconds:600,correct:3,wrong:1}],session:null,activePlanningId:null,planner:{weekdays:[0,1,2,3,4,5,6],dailyPriorities:[{id:'p',subjectId:'a',activity:'Questões',mode:'questions',target:10}]}});
+ // Give the record the current round so it counts in the same planning.
+ p.configure({history:[{id:'h',kind:'study',subjectId:'a',content:'Questões',date:today,seconds:600,correct:3,wrong:1,roundId:p.round()}]});
+ w.document.querySelector('[data-tab="cycle"]').click();
+ const card=w.document.querySelector('.daily-priority-stages');assert.ok(card);assert.ok(card.closest('.panel').querySelector('#editStagesHeader'));assert.equal(card.querySelector('progress').value,4);assert.equal(card.querySelector('progress').max,10);assert.match(card.textContent,/6 questões restantes/);card.querySelector('[data-daily-priority-start]').click();assert.equal(w.document.getElementById('focusDialog').open,true);assert.equal(w.document.querySelectorAll('.daily-priority-stages').length,1);w.close();
 });
