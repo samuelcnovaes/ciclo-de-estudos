@@ -159,3 +159,22 @@ body[data-theme=black] .theory-auto-status.active{background:#513a14;color:#ffd0
 body[data-theme=black] .theory-topic-completed,body[data-theme=black] .theory-page .theory-topic-complete[aria-pressed=true]{background:#173f2b;color:#91e4ae}
 
 .question-history-link-list{max-height:48vh;overflow:auto;margin:16px 0;border:1px solid var(--line);border-radius:10px}.theory-dialog .question-history-link-list>label{display:flex;align-items:flex-start;gap:12px;padding:13px;margin:0;border-bottom:1px solid var(--line);font-size:14px;cursor:pointer}.theory-dialog .question-history-link-list>label[hidden]{display:none}.theory-dialog .question-history-link-list input[type=checkbox]{width:17px;min-width:17px;margin:4px 0 0}.question-history-link-list span{min-width:0;overflow-wrap:anywhere}.question-history-link-list small{display:block;font-size:13px;line-height:1.6;margin-top:4px;color:var(--muted)}#questionHistoryLinkDialog{font-size:15px;line-height:1.6}#questionHistoryLinkDialog .note{font-size:14px}
+
+/* Compact question-flow pilot, scoped to the TI panel. */
+.question-flow{padding:20px;background:var(--surface-soft,#f7f9fc);border-bottom:1px solid var(--line,#dce5f2)}
+.question-flow .question-flow-heading{position:static;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 18px;padding:0;margin:0 0 14px;border:0;background:none;box-shadow:none;min-height:0}
+.question-flow-heading strong{font-size:15px;color:var(--text,#162b4b)}
+.question-flow-heading span{font-size:12px;color:var(--muted,#657899)}
+.question-flow-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px}
+.question-flow-card{display:flex;flex-direction:column;gap:12px;min-width:0;padding:18px;border:1px solid var(--line,#dce5f2);border-radius:12px;background:var(--surface,#fff)}
+.question-flow-kind{font-size:11px;font-weight:750;letter-spacing:.035em;color:var(--blue,#315fb3)}
+.question-flow-card.is-review{border-top:3px solid #ca790e;padding-top:16px}
+.question-flow-card.is-review .question-flow-kind{color:#ad6104}
+.question-flow-card h4{margin:0!important;font-size:15px;line-height:1.5;font-weight:700;overflow-wrap:anywhere;color:var(--text,#162b4b)}
+.question-flow-footer{margin-top:auto;padding-top:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.question-flow-footer a,.question-flow-footer .question-flow-link{font-size:12px;color:var(--blue,#315fb3);text-decoration:none}
+.question-flow-footer .question-flow-link{border:0;background:none;padding:6px 0;box-shadow:none}
+.question-flow-footer button{font-size:12px;padding:9px 13px;white-space:nowrap;border-radius:8px}
+.question-flow-footer .question-flow-review{background:#fff5e6;color:#995100;border-color:#edc68f;box-shadow:none}
+.question-pilot-details>summary{font-size:12px;color:var(--muted,#657899)}
+@media(max-width:600px){.question-flow{padding:14px}.question-flow-grid{grid-template-columns:1fr}.question-flow-card{padding:15px}}
