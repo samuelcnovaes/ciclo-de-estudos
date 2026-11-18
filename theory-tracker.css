@@ -192,3 +192,43 @@ body[data-theme=black] .theory-topic-completed,body[data-theme=black] .theory-pa
 .daily-priority-notebooks>span{font-size:11px;color:var(--muted)}
 .daily-priority-notebooks>button{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;white-space:normal;overflow-wrap:anywhere;padding:8px 10px;font-size:12px;background:var(--surface-soft);color:var(--green);border:1px solid var(--line);box-shadow:none}
 .daily-priority-notebooks>button>span{flex-shrink:0}
+
+/* Keep notebook names and actions inside planning rows and narrow calendar cards. */
+.stage-notice-sections,
+.stage-notice-sections > .stage-due-reviews,
+:is(.planned-block, .plan-item) .planning-question-notice {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.stage-notice-sections .planning-question-notice ul,
+:is(.planned-block, .plan-item) .planning-question-notice ul {
+  min-width: 0;
+  max-width: 100%;
+}
+.stage-notice-sections .planning-question-notice li,
+:is(.planned-block, .plan-item) .planning-question-notice li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+  gap: 6px;
+}
+.stage-notice-sections .planning-question-notice li > span,
+:is(.planned-block, .plan-item) .planning-question-notice li > span {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.stage-notice-sections .planning-question-notice li > button,
+:is(.planned-block, .plan-item) .planning-question-notice li > button {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  justify-self: end;
+  text-align: right;
+  line-height: 1.4;
+}
