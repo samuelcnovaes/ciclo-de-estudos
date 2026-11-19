@@ -1178,3 +1178,9 @@ test('batch dismisses only selected visible pending reviews and preserves study 
  const stored=w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id),saved=JSON.parse(stored);assert.equal(saved.reviews.find(r=>r.id==='a1').status,'ignored');assert.equal(saved.reviews.find(r=>r.id==='a2').status,'ignored');assert.equal(saved.reviews.find(r=>r.id==='b1').status,'scheduled');assert.equal(saved.reviews.find(r=>r.id==='done').status,'completed');assert.deepEqual(saved.history,history);assert.equal(doc.querySelectorAll('[data-review-select]').length,0);w.close();
  const loaded=await boot({id},stored);assert.equal(loaded.window.plannerTest.reviews().filter(r=>r.status==='ignored').length,2);loaded.window.close();
 });
+
+
+test('dismissed reviews leave the calendar and reappear when reopened',async()=>{
+ const d=await boot({id:'dismiss-calendar'}),w=d.window,p=w.plannerTest,doc=w.document,day=new Date().toISOString().slice(0,10);
+ p.configure({subjects:[{id:'a',name:'Auditoria',color:'#315fb3'}],reviews:[{id:'r',status:'scheduled',dueDate:day,offsetDays:0,manualSource:{subjectId:'a',name:'Auditoria',topic:'Evidência',date:day+'T12:00:00Z'}}],history:[],session:null});p.save();doc.querySelector('[data-tab="reviews"]').click();assert.ok(doc.querySelector('[data-review-id="r"]'));const box=doc.querySelector('[data-review-select="r"]');box.checked=true;box.dispatchEvent(new w.Event('change',{bubbles:true}));doc.getElementById('reviewBatchDismiss').click();assert.equal(doc.querySelector('[data-review-id="r"]'),null);doc.querySelector('[data-review-tab="ignored"]').click();assert.ok(doc.getElementById('review-r'));assert.equal(doc.querySelector('[data-review-id="r"]'),null);doc.querySelector('[data-review-restore="r"]').click();assert.ok(doc.querySelector('[data-review-id="r"]'));w.close();
+});
