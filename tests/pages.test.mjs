@@ -1224,3 +1224,11 @@ test('common learning control lists question materials from every exam and opens
  doc.querySelector('[data-question-edit]').click();doc.getElementById('questionNotebookNotes').value='Registro comum';doc.getElementById('questionNotebookForm').dispatchEvent(new w.Event('submit',{cancelable:true}));
  const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.questionNotebooks[0].notes,'Registro comum');assert.equal(saved.exams.find(e=>e.name==='SEFAZ Bahia').data.questionNotebooks[0].notes,'');assert.equal(saved.history.length,0);assert.match(doc.querySelector('.common-question-catalog').textContent,/Material Bahia/);w.close();
 });
+
+test('common learning totals show time and questions from all exams on every learning screen without counting active snapshots twice',async()=>{
+ const id='common-time',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
+ for(const [key,name,seconds,correct,wrong]of [['time-a','Receita',3600,8,2],['time-b','SEFAZ',1800,3,2]]){p.createExam({id:key,name,contest:name,seed:[]});p.configure({subjects:[{id:'a',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'same-id',kind:'study',subjectId:'a',name:'Auditoria',content:'Questões',date:new Date().toISOString(),seconds,correct,wrong},{id:'round',kind:'cycle',seconds:99999,correct:999,wrong:999}]});p.save();}
+ doc.querySelector('[data-tab="theory"]').click();
+ for(const view of ['hub','theory','questions']){if(view!=='hub')doc.querySelector('[data-learning-view="'+view+'"]').click();const summary=doc.querySelector('.common-learning-summary');assert.deepEqual([...summary.querySelectorAll('strong')].map(n=>n.textContent),['1h 30min','15','11','4']);}
+ const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.history.length,2);assert.equal(saved.exams.find(e=>e.name==='Receita').data.history.length,2);w.close();
+});
