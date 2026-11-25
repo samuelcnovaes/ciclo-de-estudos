@@ -1232,3 +1232,14 @@ test('common learning totals show time and questions from all exams on every lea
  for(const view of ['hub','theory','questions']){if(view!=='hub')doc.querySelector('[data-learning-view="'+view+'"]').click();const summary=doc.querySelector('.common-learning-summary');assert.deepEqual([...summary.querySelectorAll('strong')].map(n=>n.textContent),['1h 30min','15','11','4']);}
  const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.history.length,2);assert.equal(saved.exams.find(e=>e.name==='Receita').data.history.length,2);w.close();
 });
+
+test('home shows shared time and questions in every exam while learning control keeps its summary',async()=>{
+ const id='home-shared-study',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
+ for(const [key,name,seconds,correct,wrong]of [['home-a','Receita',3600,8,2],['home-b','SEFAZ',1800,3,2]]){p.createExam({id:key,name,contest:name,seed:[]});p.configure({subjects:[{id:'same',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'same',kind:'study',subjectId:'same',name:'Auditoria',date:new Date().toISOString(),seconds,correct,wrong}]});p.save();}
+ for(const name of ['Receita','SEFAZ']){
+ const exam=p.exams().find(e=>e.name===name);doc.querySelector('[data-tab="home"]').click();const select=doc.getElementById('sideExamSelect');select.value=exam.id;select.dispatchEvent(new w.Event('change'));
+ const summary=doc.querySelector('.home-shared-study');assert.ok(summary);assert.deepEqual([...summary.querySelectorAll('strong')].map(n=>n.textContent),['1h 30min','15','1h 30min','15','1h 30min','15']);assert.match(doc.querySelector('.home-overview-card').textContent,/1h 30min/);assert.match(doc.querySelectorAll('.home-overview-card')[2].textContent,/15/);
+ doc.querySelector('[data-tab="theory"]').click();assert.ok(doc.querySelector('.common-learning-summary'));assert.match(doc.querySelector('.common-learning-summary').textContent,/1h 30min/);
+ }
+ w.close();
+});
