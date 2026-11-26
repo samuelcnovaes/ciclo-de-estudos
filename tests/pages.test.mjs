@@ -1213,25 +1213,7 @@ test('edital subject bulk checkbox marks all descendants of only that matter and
 
 test('edital subject bulk checkbox is disabled for a matter without topics',async()=>{const d=await boot({id:'edital-bulk-empty'}),w=d.window;try{w.plannerTest.configure({subjects:[{id:'a',name:'Auditoria',contents:[]}],stages:[],edital:{subjects:[{id:'ea',subjectId:'a',name:'Auditoria',topics:[]}],plan:{}}});w.document.querySelector('[data-tab="edital"]').click();assert.equal(w.document.querySelector('[data-edital-all="ea"]').disabled,true);}finally{w.close();}});
 
-test('common learning control lists question materials from every exam and opens their original records',async()=>{
- const id='common-learning',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
- for(const [key,name,course]of [['common-a','Receita Federal','Material Receita'],['common-b','SEFAZ Bahia','Material Bahia']]){
-  p.createExam({id:key,name,contest:name,seed:[]});p.configure({subjects:[{id:'same',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[],questionNotebooks:[{id:'book',subjectId:'same',subjectName:'Auditoria',title:course,course,kind:'notebook',topic:'',target:null,resourceUrl:'',notes:'',completed:false}]});p.save();
- }
- doc.querySelector('[data-tab="theory"]').click();assert.match(doc.getElementById('pageDescription').textContent,/todas as provas/);
- doc.querySelector('[data-learning-view="questions"]').click();let catalog=doc.querySelector('.common-question-catalog');assert.match(catalog.textContent,/Material Receita/);assert.match(catalog.textContent,/Material Bahia/);
- [...catalog.querySelectorAll('button')].find(b=>b.textContent.includes('Material Receita')).click();assert.match(doc.querySelector('.question-subject-groups').textContent,/Material Receita/);assert.doesNotMatch(doc.querySelector('.question-subject-groups').textContent,/Material Bahia/);
- doc.querySelector('[data-question-edit]').click();doc.getElementById('questionNotebookNotes').value='Registro comum';doc.getElementById('questionNotebookForm').dispatchEvent(new w.Event('submit',{cancelable:true}));
- const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.questionNotebooks[0].notes,'Registro comum');assert.equal(saved.exams.find(e=>e.name==='SEFAZ Bahia').data.questionNotebooks[0].notes,'');assert.equal(saved.history.length,0);assert.match(doc.querySelector('.common-question-catalog').textContent,/Material Bahia/);w.close();
-});
 
-test('common learning totals show time and questions from all exams on every learning screen without counting active snapshots twice',async()=>{
- const id='common-time',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
- for(const [key,name,seconds,correct,wrong]of [['time-a','Receita',3600,8,2],['time-b','SEFAZ',1800,3,2]]){p.createExam({id:key,name,contest:name,seed:[]});p.configure({subjects:[{id:'a',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'same-id',kind:'study',subjectId:'a',name:'Auditoria',content:'Questões',date:new Date().toISOString(),seconds,correct,wrong},{id:'round',kind:'cycle',seconds:99999,correct:999,wrong:999}]});p.save();}
- doc.querySelector('[data-tab="theory"]').click();
- for(const view of ['hub','theory','questions']){if(view!=='hub')doc.querySelector('[data-learning-view="'+view+'"]').click();const summary=doc.querySelector('.common-learning-summary');assert.deepEqual([...summary.querySelectorAll('strong')].map(n=>n.textContent),['1h 30min','15','11','4']);}
- const saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.history.length,2);assert.equal(saved.exams.find(e=>e.name==='Receita').data.history.length,2);w.close();
-});
 
 test('home shows shared time and questions in every exam while learning control keeps its summary',async()=>{
  const id='home-shared-study',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
@@ -1239,7 +1221,7 @@ test('home shows shared time and questions in every exam while learning control 
  for(const name of ['Receita','SEFAZ']){
  const exam=p.exams().find(e=>e.name===name);doc.querySelector('[data-tab="home"]').click();const select=doc.getElementById('sideExamSelect');select.value=exam.id;select.dispatchEvent(new w.Event('change'));
  const summary=doc.querySelector('.home-shared-study');assert.ok(summary);assert.deepEqual([...summary.querySelectorAll('strong')].map(n=>n.textContent),['1h 30min','15','1h 30min','15','1h 30min','15']);assert.match(doc.querySelector('.home-overview-card').textContent,/1h 30min/);assert.match(doc.querySelectorAll('.home-overview-card')[2].textContent,/15/);
- doc.querySelector('[data-tab="theory"]').click();assert.ok(doc.querySelector('.common-learning-summary'));assert.match(doc.querySelector('.common-learning-summary').textContent,/1h 30min/);
+ doc.querySelector('[data-tab="theory"]').click();assert.equal(doc.querySelector('.common-learning-summary'),null);assert.match(doc.querySelector('.learning-choices').textContent,/15 resolvidas/);
  }
  w.close();
 });
@@ -1248,4 +1230,13 @@ test('flashcard average appears in history and statistics using card-only weight
  const d=await boot({id:'flashcard-average'}),w=d.window,p=w.plannerTest,doc=w.document,now=new Date().toISOString();p.configure({subjects:[{id:'a',name:'Anki',color:'#315fb3',contents:[]},{id:'b',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'one',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:20,cardsTotal:1},{id:'two',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:80,cardsReviewed:2,cardsNew:1},{id:'other',kind:'study',subjectId:'b',name:'Auditoria',date:now,seconds:10000,correct:5,wrong:0},{id:'zero',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:10,cardsTotal:0}]});
  doc.querySelector('[data-tab="history"]').click();assert.deepEqual([...doc.querySelectorAll('.flashcard-average b')].map(n=>n.textContent).sort(),['20s/card','26,7s/card']);
  doc.querySelector('[data-tab="statistics"]').click();assert.match(doc.getElementById('statsFlashcards').textContent,/25s\/card/);assert.doesNotMatch(doc.getElementById('statsFlashcards').textContent,/NaN|Infinity/);w.close();
+});
+
+test('same full question control appears across selected exams and edits shared source without changing selected exam or duplicating history',async()=>{
+ const id='same-full-control',d=await boot({id}),w=d.window,p=w.plannerTest,doc=w.document;
+ p.createExam({id:'control-source',name:'Origem',contest:'Origem',seed:[]});p.configure({subjects:[{id:'a',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'h',kind:'study',subjectId:'a',name:'Auditoria',date:new Date().toISOString(),seconds:120,correct:8,wrong:2,questionNotebookId:'book'}],questionNotebooks:[{id:'book',subjectId:'a',subjectName:'Auditoria',title:'Caderno comum',course:'Material comum',kind:'notebook',topic:'',target:10,resourceUrl:'',notes:'',completed:false}]});p.save();
+ p.createExam({id:'control-other',name:'Outra prova',contest:'Outra',seed:[]});p.configure({subjects:[{id:'b',name:'Direito',color:'#315fb3',contents:[]}],stages:[],history:[]});p.save();const selected=p.exams().find(e=>e.name==='Outra prova').id;
+ doc.querySelector('[data-tab="theory"]').click();doc.querySelector('[data-learning-view="questions"]').click();assert.match(doc.querySelector('.question-subject-groups').textContent,/Auditoria/);assert.match(doc.querySelector('.question-subject-groups').textContent,/Caderno comum/);assert.match(doc.querySelector('.theory-metrics').textContent,/10/);assert.equal(doc.querySelector('.common-question-catalog'),null);assert.equal(doc.querySelector('.common-learning-summary'),null);
+ doc.querySelector('[data-question-edit]').click();doc.getElementById('questionNotebookNotes').value='Compartilhado';doc.getElementById('questionNotebookForm').dispatchEvent(new w.Event('submit',{cancelable:true}));let saved=JSON.parse(w.localStorage.getItem('ciclo-estudos-v1:cloud:'+id));assert.equal(saved.activeExamId,selected);assert.equal(saved.history.length,0);const source=saved.exams.find(e=>e.name==='Origem');assert.equal(source.data.questionNotebooks[0].notes,'Compartilhado');assert.equal(source.data.history.length,1);
+ doc.querySelector('[data-tab="home"]').click();const select=doc.getElementById('sideExamSelect');select.value=source.id;select.dispatchEvent(new w.Event('change'));doc.querySelector('[data-tab="theory"]').click();doc.querySelector('[data-learning-view="questions"]').click();assert.match(doc.querySelector('.question-subject-groups').textContent,/Compartilhado/);w.close();
 });
