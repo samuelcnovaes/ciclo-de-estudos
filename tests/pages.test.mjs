@@ -1246,6 +1246,6 @@ test('home shows shared time and questions in every exam while learning control 
 
 test('flashcard average appears in history and statistics using card-only weighted time ',async()=>{
  const d=await boot({id:'flashcard-average'}),w=d.window,p=w.plannerTest,doc=w.document,now=new Date().toISOString();p.configure({subjects:[{id:'a',name:'Anki',color:'#315fb3',contents:[]},{id:'b',name:'Auditoria',color:'#315fb3',contents:[]}],stages:[],history:[{id:'one',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:20,cardsTotal:1},{id:'two',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:80,cardsReviewed:2,cardsNew:1},{id:'other',kind:'study',subjectId:'b',name:'Auditoria',date:now,seconds:10000,correct:5,wrong:0},{id:'zero',kind:'study',subjectId:'a',name:'Anki',date:now,seconds:10,cardsTotal:0}]});
- doc.querySelector('[data-tab="history"]').click();assert.deepEqual([...doc.querySelectorAll('.flashcard-average b')].map(n=>n.textContent).sort(),['20 s/card','26,7 s/card']);
- doc.querySelector('[data-tab="statistics"]').click();assert.match(doc.getElementById('statsFlashcards').textContent,/25 s\/card/);assert.doesNotMatch(doc.getElementById('statsFlashcards').textContent,/NaN|Infinity/);w.close();
+ doc.querySelector('[data-tab="history"]').click();assert.deepEqual([...doc.querySelectorAll('.flashcard-average b')].map(n=>n.textContent).sort(),['20s/card','26,7s/card']);
+ doc.querySelector('[data-tab="statistics"]').click();assert.match(doc.getElementById('statsFlashcards').textContent,/25s\/card/);assert.doesNotMatch(doc.getElementById('statsFlashcards').textContent,/NaN|Infinity/);w.close();
 });
