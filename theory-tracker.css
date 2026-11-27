@@ -241,3 +241,14 @@ background:#153e73!important;color:#fff!important;border:1px solid #83afe7!impor
 body[data-theme] #content.home-dashboard .dc-today .dc-review-shortcut span,
 #content.home-dashboard .dc-today .dc-review-shortcut span{color:#e0edff!important}
 body[data-theme] #content.home-dashboard .dc-today button.dc-review-shortcut:hover{background:#10325f!important}
+
+/* Align review filters with the inset suggestion cards. */
+.stats-review-suggestions > label,
+.stats-review-suggestions > p.note {
+  padding-inline: 14px;
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.stats-review-suggestions > label select {
+  min-width: 0;
+}
