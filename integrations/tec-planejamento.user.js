@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Meta automática — TEC e Aprovado - GPT
 // @namespace    samuel.meta.questoes
-// @version      2.0.8
+// @version      2.0.9
 // @description  Conta questões, mantém as metas e sincroniza sessões por matéria e tópico com o Planejamento.
 // @match        https://tecconcursos.com.br/*
 // @match        https://*.tecconcursos.com.br/*
@@ -17,6 +17,26 @@
 // @run-at       document-idle
 // @noframes
 // ==/UserScript==
+/* TEC BANK METADATA START */
+globalThis.CicloTecBank=(()=>{
+ const unknown='Banca não identificada',clean=v=>String(v||'').replace(/\s+/g,' ').trim();
+ const normalize=v=>{const name=clean(v).slice(0,160);return /^(?:cespe(?:\s*\/\s*cebraspe)?|cebraspe(?:\s*\/\s*cespe)?)$/i.test(name)?'CEBRASPE':name||unknown;};
+ function read(scope){
+  if(!scope)return unknown;
+  const question=scope.closest?.('.questao')||scope;
+  const link=question.querySelector('a[href*="/bancas/"],a[href*="/banca/"],.questao-cabecalho-banca,.questao-cabecalho-informacoes-banca,[data-banca]');
+  if(link){const value=clean(link.getAttribute('data-banca')||link.textContent).replace(/^Banca\s*:\s*/i,'');if(value)return normalize(value);}
+  // Only the question's metadata header is eligible, never its statement or comments.
+  const header=question.querySelector('.questao-cabecalho, .questao-cabecalho-informacoes, .questao-cabecalho-dados');
+  const text=clean(header?.textContent).replace(/^.*#\s*\d+\s*/,''),m=text.match(/(?:#\s*\d+\s*)?([\p{L}][\p{L}\p{N} .&/()_-]{1,100}?)\s*[-–—]\s*(?:19|20)\d{2}\b/u);
+  return m?normalize(m[1]):unknown;
+ }
+ function current(){return [...document.querySelectorAll('.questao')].find(el=>el.getClientRects().length&&!el.hidden)||null;}
+ const selected=()=>GM_getValue('mq1:bankFilter','');
+ const matches=e=>!selected()||normalize(e?.bank)===selected();
+ return {unknown,normalize,read,current,selected,matches};
+})();
+/* TEC BANK METADATA END */
 /* TEC PLANNER BRIDGE START */
 (() => {
  'use strict';
@@ -64,9 +84,9 @@
  function elapsed(snap){const t=snap?.timer;if(!t)return 0;let delta=t.running?Math.max(0,(Date.now()-snap.at)/1000):0;if(t.mode==='pomodoro')delta=t.phase==='rest'?0:Math.min(delta,t.phaseLeft);return Math.floor(t.elapsed+delta);}
  function activeOwner(){const lease=get(P+'controller');if(lease&&lease.id!==id&&lease.until>Date.now())return false;set(P+'controller',{id,until:Date.now()+8000});return true;}
  function collect(session,snap){
-  for(const e of session.events){const topic=get('mq1:topicEvent:'+e.id)?.topic;if(topic){e.subject=topic.subject;e.topic=topic.name;e.notebookId=get('mq1:topicEvent:'+e.id)?.notebookId||e.notebookId;}}
+  for(const e of session.events){const topic=get('mq1:topicEvent:'+e.id)?.topic;if(topic){e.subject=topic.subject;e.topic=topic.name;e.notebookId=get('mq1:topicEvent:'+e.id)?.notebookId||e.notebookId;}e.bank=CicloTecBank.normalize(get('mq1:event:'+e.id)?.bank||e.bank);}
   const known=new Set(session.events.map(e=>e.id)),fresh=[];
-  for(const key of GM_listValues()){if(!key.startsWith('mq1:event:'))continue;const e=get(key);if(!e||known.has(e.id)||e.ts<session.since||get('mq1:void:'+e.id,false))continue;const topic=get('mq1:topicEvent:'+e.id)?.topic||{subject:'Matéria não identificada',name:'Tópico não identificado'};fresh.push({id:e.id,notebookId:get('mq1:topicEvent:'+e.id)?.notebookId||'',subject:topic.subject,topic:topic.name,correct:Number(e.correct)||0,wrong:Number(e.wrong)||0,ts:e.ts});}
+  for(const key of GM_listValues()){if(!key.startsWith('mq1:event:'))continue;const e=get(key);if(!e||known.has(e.id)||e.ts<session.since||get('mq1:void:'+e.id,false))continue;const topic=get('mq1:topicEvent:'+e.id)?.topic||{subject:'Matéria não identificada',name:'Tópico não identificado'};fresh.push({id:e.id,bank:CicloTecBank.normalize(e.bank),notebookId:get('mq1:topicEvent:'+e.id)?.notebookId||'',subject:topic.subject,topic:topic.name,correct:Number(e.correct)||0,wrong:Number(e.wrong)||0,ts:e.ts});}
   fresh.sort((a,b)=>a.ts-b.ts||a.id.localeCompare(b.id));const end=Math.max(session.lastElapsed||0,elapsed(snap)),start=session.lastElapsed||0;fresh.forEach((e,i)=>{e.elapsed=start+(end-start)*(i+1)/fresh.length;session.events.push(e);});
   // Manual voids remain reversible in the original gadget and are removed from this session too.
   session.events=session.events.filter(e=>!get('mq1:void:'+e.id,false));if(fresh.length)session.lastElapsed=end;session.lastClock=end;session.updatedAt=Date.now();set(SESSION,session);return fresh.length;
@@ -74,8 +94,8 @@
  function render(){const snap=connection(),session=get(SESSION),bound=!!session&&!session.saved,matching=snap&&(!bound||same(snap.context,session.context)),active=matching&&bound&&snap.timer?.sessionId===session.id;
   const observed=get(SNAP);$('context').textContent=snap?'Conectado · '+snap.examName+' · '+snap.planningName:observed&&Date.now()-observed.at<20000&&!observed.enabled?'Planejamento detectado. Ative a integração pelo botão TEC no cabeçalho do Planejamento.':'Sem conexão. Abra o Planejamento, confira se este script está habilitado nos dois sites e ative a integração pelo botão TEC.';$('clock').textContent=format(active?elapsed(snap):bound?session.lastClock||0:0);$('miniClock').textContent=$('clock').textContent;
   $('cancel').hidden=!bound;$('cancel').disabled=busy||!matching;$('recover').hidden=!bound||!!snap?.timer;$('recover').disabled=busy||!matching;$('start').hidden=bound;$('start').disabled=busy||!snap||!!snap.timer;$('reuse').hidden=bound||!snap?.timer;$('reuse').disabled=busy||!snap;$('pause').hidden=!bound;$('pause').disabled=busy||!active;$('pause').textContent=snap?.timer?.running?'Pausar':'Continuar';$('finish').hidden=!bound;$('finish').disabled=busy||!active;
-  const totals=new Map();for(const e of bound?session.events:[]){const k=JSON.stringify([e.subject,e.topic]);if(!totals.has(k))totals.set(k,{subject:e.subject,topic:e.topic,correct:0,wrong:0});const g=totals.get(k);g.correct+=e.correct;g.wrong+=e.wrong;}
-  $('summary').innerHTML=[...totals.values()].map(g=>'<div><b>'+esc(g.subject)+'</b> · '+esc(g.topic)+'<br>'+g.correct+' acertos · '+g.wrong+' erros</div>').join('');
+  const totals=new Map();for(const e of bound?session.events:[]){const k=JSON.stringify([e.subject,e.topic,e.bank]);if(!totals.has(k))totals.set(k,{subject:e.subject,topic:e.topic,bank:e.bank,correct:0,wrong:0});const g=totals.get(k);g.correct+=e.correct;g.wrong+=e.wrong;}
+  $('summary').innerHTML=[...totals.values()].map(g=>'<div><b>'+esc(g.subject)+'</b> · '+esc(g.topic)+' · '+esc(g.bank||CicloTecBank.unknown)+'<br>'+g.correct+' acertos · '+g.wrong+' erros</div>').join('');
   if(bound&&!matching)status('Sessão guardada. Reabra o Planejamento na mesma conta, prova e planejamento.');
  }
  async function act(type,payload={}){if(busy)return;busy=true;render();try{const data=await request(type,payload);if(type==='start'||type==='recover'){if(!data.timer?.sessionId)throw Error('Não foi possível vincular o cronômetro.');const prior=get(SESSION);set(SESSION,{id:data.timer.sessionId,context:data.context,since:data.timer.startedAt,events:prior?.id===data.timer.sessionId?prior.events:[],lastElapsed:prior?.id===data.timer.sessionId?prior.lastElapsed||0:0,lastClock:data.timer.elapsed,controller:id});lastSent='';status('Sessão iniciada. Resolva questões de quaisquer matérias e tópicos.');}else if(type==='cancel'){if(data.status==='saved'){status('Esta sessão já foi salva no Planejamento.');}else status('Cronômetro cancelado. Nenhum registro de estudo foi salvo.');remove(SESSION);lastSent='';}else if(type==='finish'){status('Conferência aberta no Planejamento. Confira os tópicos e clique em Salvar registros.');plannerFocus();}else status(type==='pause'?'Cronômetro pausado.':'Cronômetro em andamento.');}catch(error){status(error.message);}finally{busy=false;render();}}
@@ -151,7 +171,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
     return GM_listValues()
       .filter(k => k.startsWith(EVENT))
       .map(k => GM_getValue(k))
-      .filter(e => e && !GM_getValue(PREFIX + 'void:' + e.id, false));
+      .filter(e => e && CicloTecBank.matches(e) && !GM_getValue(PREFIX + 'void:' + e.id, false));
   }
 
   function totals(events, date) {
@@ -460,7 +480,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       return;
     }
 
-    pending = { id, scope, started: Date.now() };
+    pending = { id, scope, bank:CicloTecBank.read(scope), started: Date.now() };
     status(`Questão #${id}: aguardando o resultado do TEC…`);
   }
 
@@ -506,6 +526,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
       total: 1,
       correct,
       wrong: 1 - correct,
+      bank:attempt.bank,
       ts: Date.now()
     });
 
@@ -553,6 +574,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
   }
 
   GM_addValueChangeListener(SIGNAL, render);
+  document.addEventListener('ciclo-tec-bank-filter',render);
 
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) render();
@@ -907,6 +929,22 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
     .forEach(el => config.appendChild(el));
 
   panel.append(box, metrics, footer, config);
+
+  const bankBox=document.createElement('div');
+  bankBox.style.cssText='padding:10px 0;color:#fff;font:12px system-ui';
+  bankBox.innerHTML='<label for="turbo-bank-filter">Filtrar resultados por banca</label><select id="turbo-bank-filter" style="display:block;width:100%;margin:6px 0;padding:8px;background:#292d46;color:#fff;border:1px solid #626987;border-radius:8px"></select><span id="turbo-current-bank"></span><small style="display:block;margin-top:5px">A meta configurada é aplicada ao filtro selecionado. Registros antigos sem banca aparecem em Geral e em Banca não identificada. Adições manuais usam a banca selecionada.</small>';
+  box.after(bankBox);
+  const bankSelect=$('turbo-bank-filter');
+  function updateBanks(){
+    const selected=CicloTecBank.selected(),active=CicloTecBank.read(CicloTecBank.current()),banks=new Set(['CEBRASPE','CESGRANRIO','FCC','FGV','VUNESP',CicloTecBank.unknown]);
+    if(active!==CicloTecBank.unknown)banks.add(active);if(selected)banks.add(selected);
+    for(const key of GM_listValues())if(key.startsWith('mq1:event:')){const e=GM_getValue(key);if(e&&!GM_getValue('mq1:void:'+e.id,false))banks.add(CicloTecBank.normalize(e.bank));}
+    const entries=[['','Geral — todas as bancas'],...[...banks].sort((a,b)=>a.localeCompare(b,'pt-BR')).map(b=>[b,b])];
+    const signature=JSON.stringify(entries);if(bankSelect.dataset.options!==signature){bankSelect.replaceChildren(...entries.map(([value,label])=>{const o=document.createElement('option');o.value=value;o.textContent=label;return o;}));bankSelect.dataset.options=signature;}
+    bankSelect.value=selected;$('turbo-current-bank').textContent='Questão atual: '+active;
+  }
+  bankSelect.onchange=()=>{GM_setValue('mq1:bankFilter',bankSelect.value);GM_setValue('mq1:signal',crypto.randomUUID());document.dispatchEvent(new Event('ciclo-tec-bank-filter'));updateBanks();};
+  GM_addValueChangeListener('mq1:bankFilter',updateBanks);setInterval(updateBanks,1000);updateBanks();
 
   function updateDesign() {
     const total = Number($('total').textContent) || 0;
@@ -1263,6 +1301,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
 
       if (
         event &&
+        CicloTecBank.matches(event) &&
         event.day >= w.start &&
         event.day <= w.today &&
         !GM_getValue(prefix+'void:'+event.id,false)
@@ -1321,6 +1360,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
   };
 
   GM_addValueChangeListener(prefix+'signal',updateWeek);
+  document.addEventListener('ciclo-tec-bank-filter',updateWeek);
 
   const observer = new MutationObserver(updateWeek);
 
@@ -1732,7 +1772,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
     if (error) { $('manual-message').textContent = error; return; }
     const id = 'manual:'+crypto.randomUUID();
     GM_setValue(P+'topicEvent:'+id,{id,day:date,topic});
-    GM_setValue(P+'event:'+id,{id,day:date,total,correct,wrong,ts:Date.now(),source:'manual'});
+    GM_setValue(P+'event:'+id,{id,day:date,total,correct,wrong,bank:CicloTecBank.selected()||CicloTecBank.unknown,ts:Date.now(),source:'manual'});
     lastManualId = id;
     $('manual-message').textContent = `${total} questões adicionadas em ${date.split('-').reverse().join('/')}: ${topic.name}.`;
     $('manual-undo').hidden = false;
@@ -1850,6 +1890,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
     }
   }
 
+  document.addEventListener('ciclo-tec-bank-filter',()=>update());
   function tally(topic) {
     const out = { today:0, total:0, correctToday:0, wrongToday:0, correctTotal:0, wrongTotal:0, last:'' };
     if (!topic) return out;
@@ -1865,7 +1906,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
 
       const event = GM_getValue(P+'event:'+entry.id,null);
 
-      if (!event || GM_getValue(P+'void:'+entry.id,false)) continue;
+      if (!event || !CicloTecBank.matches(event) || GM_getValue(P+'void:'+entry.id,false)) continue;
 
       const n = Number(event.total) || 0;
 
@@ -1939,7 +1980,7 @@ if (!(location.origin === "https://samuelcnovaes.github.io" && location.pathname
 
     if (done && liveTopic) {
       const key =
-        P+'topicNotified:'+day()+':'+topic.key+':'+target;
+        P+'topicNotified:'+day()+':'+topic.key+':'+CicloTecBank.selected()+':'+target;
 
       if (!GM_getValue(key,false)) {
         GM_setValue(key,true);

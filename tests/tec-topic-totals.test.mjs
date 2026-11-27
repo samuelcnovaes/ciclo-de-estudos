@@ -10,7 +10,7 @@ test('topic totals include previous days and manual entries, excluding voided re
  }
  values.set(P+'topicEvent:missing',{id:'missing',day:today,topic:{key:'a'}});
  const tally=script.slice(script.indexOf('  function tally(topic)'),script.indexOf('  function update() {',script.indexOf('  function tally(topic)')));
- const counts=runInNewContext(tally+';tally({key:"a"})',{P,day:()=>today,GM_listValues:()=>[...values.keys()],GM_getValue:(key,fallback)=>values.get(key)??fallback});
+ const counts=runInNewContext(script.split('/* TEC BANK METADATA START */')[1].split('/* TEC BANK METADATA END */')[0]+tally+';tally({key:"a"})',{P,day:()=>today,GM_listValues:()=>[...values.keys()],GM_getValue:(key,fallback)=>values.get(key)??fallback});
  assert.equal(counts.total,8);assert.equal(counts.correctTotal,5);assert.equal(counts.wrongTotal,3);assert.equal(counts.today,5);assert.equal(counts.correctToday,3);assert.equal(counts.wrongToday,2);
  const nodes=Object.fromEntries(['topic-total-hits','topic-total-errors','topic-today-hits','topic-today-errors'].map(id=>[id,{textContent:''}]));
  const render=script.slice(script.indexOf("    $('topic-total-hits').textContent"),script.indexOf('    const total = counts.today;',script.indexOf("    $('topic-total-hits').textContent")));

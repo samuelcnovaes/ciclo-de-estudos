@@ -38,3 +38,12 @@ No painel TEC + Planejamento, use **Cancelar cronômetro** e confirme para desca
 Arraste o cabeçalho **TEC + Planejamento** para posicionar o painel onde preferir. Em **Ajustar painel**, altere a largura ou restaure a posição inicial. O botão **−** recolhe os controles e mantém o tempo visível. Posição, largura e recolhimento são lembrados; o painel permanece dentro da tela ao redimensionar a janela. Também é possível focar o cabeçalho e usar as setas do teclado.
 
 A conexão procura automaticamente uma aba disponível, tenta novamente durante o carregamento e verifica pedidos que não receberam a notificação entre abas. Uma aba fechada ou sem resposta deixa de bloquear a comunicação. **Conectar ao Planejamento** aproveita uma conexão existente, evitando recarregar a página já conectada. Após atualizar o script no Tampermonkey, recarregue TEC e Planejamento uma vez e mantenha a integração ativada no botão TEC.
+
+
+## Bancas e filtro do TEC TURBO — versão 2.0.9
+
+A banca é capturada no cabeçalho da questão ao responder e acompanha os resultados enviados ao Planejamento. O TEC TURBO mostra a banca da questão atual e permite selecionar **Geral — todas as bancas**, uma das bancas detectadas ou **Banca não identificada**. O filtro afeta os totais diários, semanais, acertos, erros, aproveitamento, histórico e contadores por tópico. A meta configurada permanece a mesma e é comparada ao resultado do filtro selecionado. A seleção é lembrada no navegador.
+
+As respostas de todas as bancas continuam sendo capturadas e enviadas ao Planejamento, independentemente do filtro visual. Na conferência, os registros são separados por matéria, tópico, caderno e banca, mantendo o tempo total da sessão. Registros antigos sem essa informação permanecem em Geral e em Banca não identificada; a extensão não presume a banca deles. Adições manuais recebem a banca do filtro escolhido; em Geral, ficam sem banca identificada.
+
+Atualize o mesmo userscript no Tampermonkey, sem apagar os dados, e recarregue TEC e Planejamento. A captura depende do cabeçalho disponível no TEC.
